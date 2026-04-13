@@ -1,0 +1,280 @@
+{
+  "2025-2026": {
+    "1": [
+      {
+        "donem": "Güz",
+        "dersler": [
+          {
+            "ad": "Genel İngilizce 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Matematik 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "İstatistik 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Olasılık 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Doğrusal Programlama 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Türk Dili 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Atatürk İlkeleri ve İnkılap Tarihi 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          }
+        ]
+      },
+      {
+        "donem": "Bahar",
+        "dersler": [
+          {
+            "ad": "Genel İngilizce 2",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Matematik 2",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "İstatistik 2",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Olasılık 2",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Doğrusal Programlama 2",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Türk Dili 2",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Atatürk İlkeleri ve İnkılap Tarihi 2",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          }
+        ]
+      }
+    ],
+    "2": [
+      {
+        "donem": "Güz",
+        "dersler": [
+          {
+            "ad": "Veri Analizinde Bilgisayar Programlama 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "İktisat",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Örnekleme 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Matematiksel İstatistik",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Yöneylem Araştırması",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          }
+        ]
+      },
+      {
+        "donem": "Bahar",
+        "dersler": [
+          {
+            "ad": "Veri Analizinde Bilgisayar Programlama 2",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Örnekleme 2",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Kantitatif Karar Verme Teknikleri",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Optimizasyon",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          }
+        ]
+      }
+    ],
+    "3": [
+      {
+        "donem": "Güz",
+        "dersler": [
+          {
+            "ad": "Deney Düzenleme 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Uygulamalı İstatistil 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Regresyon Analizi 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Açıklayıcı Veri Analizi",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          }
+        ]
+      },
+      {
+        "donem": "Bahar",
+        "dersler": [
+          {
+            "ad": "Parametrik Olmayan İstatistiksel Yöntemler",
+            "vize": 0.3,
+            "final": 0.5,
+            "quiz": 0.2
+          },
+          {
+            "ad": "Zaman Serileri Analizi",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Regresyon Analizi 2",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Mesleki İngilizce",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          }
+        ]
+      }
+    ],
+    "4": [
+      {
+        "donem": "Güz",
+        "dersler": [
+          {
+            "ad": "Çok Değişkenli Analiz 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Ekonometri 1",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Kariyer Planlama",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          }
+        ]
+      },
+      {
+        "donem": "Bahar",
+        "dersler": [
+          {
+            "ad": "Çok Değişkenli Analiz 2",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Ekonometri 2",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Makine Öğrenmesi",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          },
+          {
+            "ad": "Bitirme Projesi",
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0
+          }
+        ]
+      }
+    ]
+  }
+}

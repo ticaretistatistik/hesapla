@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Notu Hesap Makinesi | Ticaret İstatistik</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            border-top: 4px solid #FFC107;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 5px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 13px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        select,
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 0;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        select:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #FFC107;
+            box-shadow: inset 0 0 0 1px #FFC107;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-calculate {
+            background: #FFC107;
+            color: #1a1a1a;
+        }
+
+        .btn-calculate:hover {
+            background: #FFB300;
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+
+        .results {
+            display: none;
+            margin-top: 35px;
+            padding: 25px;
+            background: #fafafa;
+            border-radius: 0;
+            border-left: 4px solid #FFC107;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-left: 3px solid #FFC107;
+        }
+
+        .result-item.impossible {
+            border-left-color: #d32f2f;
+            background: #fff3e0;
+        }
+
+        .result-item.success {
+            border-left-color: #388e3c;
+            background: #e8f5e9;
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .result-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFC107;
+        }
+
+        .result-item.impossible .result-value {
+            color: #d32f2f;
+        }
+
+        .result-item.success .result-value {
+            color: #388e3c;
+        }
+
+        .result-note {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px;
+            border-radius: 0;
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: #1565c0;
+            line-height: 1.5;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .grade-AA {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .grade-BA {
+            background: #8BC34A;
+            color: white;
+        }
+
+        .grade-BB {
+            background: #CDDC39;
+            color: #333;
+        }
+
+        .grade-CB {
+            background: #FFC107;
+            color: #333;
+        }
+
+        .grade-CC {
+            background: #FF9800;
+            color: white;
+        }
+
+        .grade-CD {
+            background: #FF5722;
+            color: white;
+        }
+
+        .grade-DD {
+            background: #F44336;
+            color: white;
+        }
+
+        .grade-DF {
+            background: #9C27B0;
+            color: white;
+        }
+
+        .grade-F {
+            background: #333;
+            color: white;
+        }
+
+        .courses-section {
+            display: none;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .courses-section.show {
+            display: block;
+        }
+
+        .course-item {
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 0;
+            margin-bottom: 15px;
+            border-left: 3px solid #FFC107;
+        }
+
+        .course-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .course-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .course-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .course-input-group label {
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .course-input-group input {
+            padding: 8px;
+            font-size: 12px;
+            border: 1px solid #ddd;
+        }
+
+        .semester-title {
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .semester-title:first-child {
+            margin-top: 0;
+        }
+
+        .tab-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 0;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .tab-btn.active {
+            background: #FFC107;
+            color: #1a1a1a;
+            border-color: #FFC107;
+        }
+
+        .tab-btn:hover {
+            border-color: #FFC107;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            padding-bottom: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+        }
+
+        footer a {
+            color: #FFC107;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: #FFB300;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Final Notu Hesap Makinesi</h1>
+        <p class="subtitle">İstatistik Bölümü - İstanbul Ticaret Üniversitesi</p>
+
+        <div class="info-box">
+            Vize puanınız ve hedeflerinize göre ihtiyacınız olan minimum final puanını hesaplayın.
+        </div>
+
+        <form id="calculatorForm">
+            <div class="row">
+                <div class="form-group">
+                    <label for="year">Akademik Yıl</label>
+                    <select id="year" required>
+                        <option value="2025-2026">2025-2026</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="class">Sınıf</label>
+                    <select id="class" required>
+                        <option value="">Seçiniz</option>
+                        <option value="1">1. Sınıf</option>
+                        <option value="2">2. Sınıf</option>
+                        <option value="3">3. Sınıf</option>
+                        <option value="4">4. Sınıf</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" id="vizePuanSection">
+                <label for="vizePuan">Vize Puanı</label>
+                <input type="number" id="vizePuan" min="0" max="100" step="0.01" placeholder="0-100" required>
+                <div class="error" id="vizeError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="targetType">Hedef Türü</label>
+                <select id="targetType" required onchange="updateTargetInput()">
+                    <option value="passing">Ders Geçiş Notu</option>
+                    <option value="grade">Ders Harf Notu</option>
+                    <option value="average">Ders Ortalaması</option>
+                    <option value="semester">Dönem Ortalaması</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="targetValue" id="targetLabel">Hedef Harf Notu</label>
+                <div id="targetInputContainer">
+                    <select id="targetValue" required>
+                        <option value="">Seçiniz</option>
+                        <option value="AA">AA</option>
+                        <option value="BA">BA</option>
+                        <option value="BB">BB</option>
+                        <option value="CB">CB</option>
+                        <option value="CC">CC</option>
+                        <option value="CD">Geçer Şartlı Başarılı(CD)</option>
+                        <option value="DD">Şartlı Başarılı(DD)</option>
+                        <option value="DF">Şartlı Başarılı(DF)</option>
+                    </select>
+                </div>
+                <div class="error" id="targetError"></div>
+            </div>
+
+            <div id="coursesSection" class="courses-section">
+                <h3 style="margin-bottom: 15px; color: #1a1a1a; font-size: 16px;">Ders Notlarınız</h3>
+                <div class="tab-buttons" id="semesterTabs"></div>
+                <div id="coursesContent"></div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-calculate">Hesapla</button>
+                <button type="reset" class="btn-reset">Temizle</button>
+            </div>
+        </form>
+
+        <div class="results" id="results">
+            <div id="resultsContent"></div>
+        </div>
+
+        <footer>
+            <div style="margin-bottom: 15px;">
+                <a href="https://github.com/ticaretistatistik/"
+                    style="display: inline-flex; align-items: center; gap: 10px;">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path
+                            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
+                        </path>
+                    </svg>
+                </a>
+            </div>
+            <div style="font-size: 12px; color: #999; margin-top: 10px; line-height: 1.5;">
+                <p>İstanbul Ticaret Üniversitesi<br>İstatistik Bölümü Öğrencileri Tarafından Geliştirilmiştir</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Global değişkenler
+        let harfNotlari = {};
+        let gradeToGPA = {};
+        let dersBilgileri = {};
+        let mufredat = {};
+        let CONFIG = {};
+        let gecisNotu = 41;
+        let sartliGecisNotu = 31;
+
+        // Config ve Mufredat'ı yükle
+        Promise.all([
+            fetch('config.json').then(r => r.json()),
+            fetch('mufredat.json').then(r => r.json())
+        ])
+        .then(([config, muf]) => {
+            CONFIG = config;
+            harfNotlari = CONFIG.harfNotlari;
+            gradeToGPA = CONFIG.gradeToGPA;
+            dersBilgileri = CONFIG.dersBilgileri;
+            gecisNotu = Number(CONFIG.gecisNotu ?? 41);
+            sartliGecisNotu = Number(CONFIG.sartliGecisNotu ?? 31);
+            mufredat = muf;
+            console.log('✓ Config ve Mufredat yüklendi');
+        })
+        .catch(e => {
+            console.error('Hata: Config dosyaları yüklenemedi', e);
+            alert('Sistem başlatılamadı. Lütfen sayfayı yenileyin.');
+        });
+
+        let currentSemester = 0;
+
+        // Varsayılan yılı ayarla (2026)
+        document.getElementById('year').value = '2025-2026';
+
+        function updateTargetInput() {
+            const targetType = document.getElementById('targetType').value;
+            const targetLabel = document.getElementById('targetLabel');
+            const container = document.getElementById('targetInputContainer');
+            const coursesSection = document.getElementById('coursesSection');
+            const vizeSection = document.getElementById('vizePuanSection');
+            const vizePuanInput = document.getElementById('vizePuan');
+
+            coursesSection.classList.remove('show');
+
+            // Dönem ortalaması seçilmişse vize puanı alanını gizle ve required'ı kaldır
+            if (targetType === 'semester') {
+                vizeSection.style.display = 'none';
+                vizePuanInput.removeAttribute('required');
+            } else {
+                vizeSection.style.display = 'block';
+                vizePuanInput.setAttribute('required', 'required');
+            }
+
+            if (targetType === 'passing') {
+                targetLabel.textContent = 'Geçiş Notu';
+                container.innerHTML = `<input type="number" id="targetValue" value="${gecisNotu}" disabled>`;
+            } else if (targetType === 'grade') {
+                targetLabel.textContent = 'Hedef Harf Notu';
+                container.innerHTML = `
+                    <select id="targetValue" required>
+                        <option value="">Seçiniz</option>
+                        <option value="AA">AA</option>
+                        <option value="BA">BA</option>
+                        <option value="BB">BB</option>
+                        <option value="CB">CB</option>
+                        <option value="CC">CC</option>
+                        <option value="CD">Geçer Şartlı Başarılı</option>
+                        <option value="DD">Şartlı Başarılı</option>
+                        <option value="DF">Şartlı Başarılı</option>
+                    </select>
+                `;
+            } else if (targetType === 'average') {
+                targetLabel.textContent = 'Hedef Ortalama';
+                container.innerHTML = '<input type="number" id="targetValue" min="0" max="100" step="0.01" placeholder="0-100" required>';
+            } else if (targetType === 'semester') {
+                targetLabel.textContent = 'Dönem Ortalaması Hesapla';
+                container.innerHTML = '';
+                renderCourses();
+                coursesSection.classList.add('show');
+            }
+        }
+
+        function renderCourses() {
+            const classLevel = document.getElementById('class').value;
+            const year = document.getElementById('year').value;
+            if (!classLevel || !mufredat[year] || !mufredat[year][classLevel]) return;
+
+            const semesters = mufredat[year][classLevel];
+            const tabsContainer = document.getElementById('semesterTabs');
+            const coursesContent = document.getElementById('coursesContent');
+
+            tabsContainer.innerHTML = '';
+            coursesContent.innerHTML = '';
+
+            semesters.forEach((semester, index) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
+                btn.textContent = semester.donem;
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    showSemester(index);
+                };
+                tabsContainer.appendChild(btn);
+            });
+
+            showSemester(0);
+        }
+
+        function showSemester(index) {
+            currentSemester = index;
+            const classLevel = document.getElementById('class').value;
+            const year = document.getElementById('year').value;
+            const semester = mufredat[year][classLevel][index];
+            const coursesContent = document.getElementById('coursesContent');
+
+            coursesContent.innerHTML = '';
+            semester.dersler.forEach(ders => {
+                const courseItem = document.createElement('div');
+                courseItem.className = 'course-item';
+                courseItem.innerHTML = `
+                    <div class="course-name">${ders}</div>
+                    <div class="course-inputs">
+                        <div class="course-input-group">
+                            <label>Vize</label>
+                            <input type="number" class="course-vize" min="0" max="100" step="0.01" placeholder="0-100" data-ders="${ders}">
+                        </div>
+                        <div class="course-input-group">
+                            <label>Final</label>
+                            <input type="number" class="course-final" min="0" max="100" step="0.01" placeholder="0-100" data-ders="${ders}">
+                        </div>
+                        <div class="course-input-group">
+                            <label>Quiz (Opsiyonel)</label>
+                            <input type="number" class="course-quiz" min="0" max="100" step="0.01" placeholder="0-100" data-ders="${ders}">
+                        </div>
+                    </div>
+                `;
+                coursesContent.appendChild(courseItem);
+            });
+
+            // Tab butonlarını güncelle
+            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+        }
+
+        function validateScore(value, name) {
+            if (value < 0 || value > 100) {
+                throw new Error(`${name} değeri 0 ile 100 arasında olmalıdır.`);
+            }
+        }
+
+        function calculateMinimumFinal(ders, vize, targetScore) {
+            validateScore(vize, "Vize");
+            validateScore(targetScore, "Hedef puan");
+
+            const required = (targetScore - vize * ders.vize) / ders.final;
+            return required;
+        }
+
+        function findGrade(score) {
+            const grades = ['AA', 'BA', 'BB', 'CB', 'CC', 'CD', 'DD', 'DF', 'F'];
+            for (let grade of grades) {
+                if (score >= harfNotlari[grade]) {
+                    return grade;
+                }
+            }
+            return 'F';
+        }
+
+        function formatResult(title, value, isImpossible = false) {
+            const className = isImpossible ? 'impossible' : 'success';
+            if (isImpossible) {
+                return `
+                    <div class="result-item ${className}">
+                        <div class="result-title">${title}</div>
+                        <div class="result-value">İmkansız</div>
+                        <div class="result-note">Hedefi ulaşmak imkansız. Final notu 0 ile 100 arasında olması gerekir ancak bu hedef için yeterli değildir.</div>
+                    </div>
+                `;
+            }
+
+            let displayValue = value;
+            let note = '';
+            if (value < 0) {
+                displayValue = 0;
+                note = '<div class="result-note">Zaten hedefi garantilediniz! Final sınavında 0 alsanız bile hedefinize ulaşırsınız.</div>';
+            }
+
+            return `
+                <div class="result-item ${className}">
+                    <div class="result-title">${title}</div>
+                    <div class="result-value">${displayValue.toFixed(2)}</div>
+                    ${note}
+                </div>
+            `;
+        }
+
+        document.getElementById('calculatorForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const targetType = document.getElementById('targetType').value;
+            const classLevel = document.getElementById('class').value;
+            const year = document.getElementById('year').value;
+
+            if (!classLevel) {
+                alert('Lütfen sınıf seçiniz.');
+                return;
+            }
+
+            try {
+                let vize = null;
+
+                // Dönem ortalaması dışında, vize puanı gerekli
+                if (targetType !== 'semester') {
+                    vize = parseFloat(document.getElementById('vizePuan').value);
+                    validateScore(vize, "Vize");
+
+                    // Hedef değeri kontrol et
+                    const targetValue = document.getElementById('targetValue');
+                    if (!targetValue || !targetValue.value) {
+                        alert('Lütfen hedef değeri seçiniz.');
+                        return;
+                    }
+                }
+
+                const ders = dersBilgileri[classLevel];
+                let results = '';
+
+                if (targetType === 'semester') {
+                    // Dönem ortalaması hesapla
+                    const courseInputs = document.querySelectorAll('.course-vize');
+                    let totalGPA = 0;
+                    let courseCount = 0;
+                    let detailsHtml = '';
+
+                    courseInputs.forEach(vizeInput => {
+                        const dersAdi = vizeInput.dataset.ders;
+                        const vizeVal = vizeInput.value ? parseFloat(vizeInput.value) : null;
+                        const finalInput = document.querySelector(`.course-final[data-ders="${dersAdi}"]`);
+                        const finalVal = finalInput.value ? parseFloat(finalInput.value) : null;
+                        const quizInput = document.querySelector(`.course-quiz[data-ders="${dersAdi}"]`);
+                        const quizVal = quizInput.value ? parseFloat(quizInput.value) : null;
+
+                        if (vizeVal !== null && finalVal !== null) {
+                            const courseGrade = vizeVal * ders.vize + finalVal * ders.final + (quizVal !== null ? quizVal * ders.quiz : 0);
+                            const grade = findGrade(courseGrade);
+                            const gpa = gradeToGPA[grade];
+                            totalGPA += gpa;
+                            courseCount++;
+                            detailsHtml += `<div style="font-size: 12px; color: #666; margin: 5px 0;"><strong>${dersAdi}:</strong> ${courseGrade.toFixed(2)} <span class="grade-badge grade-${grade}">${grade}</span> (${gpa.toFixed(2)})</div>`;
+                        }
+                    });
+
+                    if (courseCount === 0) {
+                        alert('Lütfen en az bir dersin vize ve final puanlarını giriniz.');
+                        return;
+                    }
+
+                    const semesterGPA = totalGPA / courseCount;
+
+                    results += `
+                        <div class="result-item">
+                            <div class="result-title">Seçili Bilgiler</div>
+                            <div style="font-size: 13px; color: #666;">
+                                <strong>Yıl:</strong> ${year} | <strong>Sınıf:</strong> ${classLevel}. Sınıf | <strong>Dönem:</strong> ${mufredat[year][classLevel][currentSemester].donem}
+                            </div>
+                        </div>
+                        <div class="result-item success">
+                            <div class="result-title">Dönem GPA</div>
+                            <div class="result-value">${semesterGPA.toFixed(2)} / 4.0</div>
+                            <div class="result-note">Girilen ${courseCount} dersin 4'lük sistem ortalaması</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="result-title">Ders Detayları</div>
+                            ${detailsHtml}
+                        </div>
+                    `;
+                } else if (targetType === 'passing') {
+                    const requiredGecis = calculateMinimumFinal(ders, vize, gecisNotu);
+                    const gradeGecis = findGrade(gecisNotu);
+                    const isImpossibleGecis = requiredGecis > 100;
+
+                    const requiredSartli = calculateMinimumFinal(ders, vize, sartliGecisNotu);
+                    const gradeSartli = findGrade(sartliGecisNotu);
+                    const isImpossibleSartli = requiredSartli > 100;
+
+                    results += `
+                        <div class="result-item">
+                            <div class="result-title">Seçili Bilgiler</div>
+                            <div style="font-size: 13px; color: #666;">
+                                <strong>Yıl:</strong> ${year} | <strong>Sınıf:</strong> ${classLevel}. Sınıf
+                            </div>
+                        </div>
+                    `;
+                    results += formatResult(
+                        `Geçiş Notu (${gecisNotu}) için Gereken Minimum Final ${gradeGecis ? `<span class="grade-badge grade-${gradeGecis}">${gradeGecis}</span>` : ''}`,
+                        requiredGecis,
+                        isImpossibleGecis
+                    );
+                    results += `
+                        <div class="result-item">
+                            <div class="result-title">Şartlı Geçiş Bilgisi (${sartliGecisNotu}) ${gradeSartli ? `<span class="grade-badge grade-${gradeSartli}">${gradeSartli}</span>` : ''}</div>
+                            <div style="font-size: 13px; color: #666; margin-top: 6px;">
+                                ${isImpossibleSartli
+                                    ? `Bu eşik için gerekli final notu 100'ün üzerinde.`
+                                    : `Bu eşik için gerekli minimum final: <strong>${Math.max(0, requiredSartli).toFixed(2)}</strong>`}
+                            </div>
+                        </div>
+                    `;
+                } else if (targetType === 'grade') {
+                    const hedefHarf = document.getElementById('targetValue').value;
+                    if (!hedefHarf) {
+                        alert('Lütfen harf notu seçiniz.');
+                        return;
+                    }
+                    const targetScore = harfNotlari[hedefHarf];
+                    const required = calculateMinimumFinal(ders, vize, targetScore);
+                    const isImpossible = required > 100;
+
+                    results += `
+                        <div class="result-item">
+                            <div class="result-title">📋 Seçili Bilgiler</div>
+                            <div style="font-size: 13px; color: #666;">
+                                <strong>Yıl:</strong> ${year} | <strong>Sınıf:</strong> ${classLevel}. Sınıf
+                            </div>
+                        </div>
+                    `;
+                    results += formatResult(
+                        `🎯 ${hedefHarf} Notu (${targetScore}+) için Gereken Minimum Final <span class="grade-badge grade-${hedefHarf}">${hedefHarf}</span>`,
+                        required,
+                        isImpossible
+                    );
+                } else if (targetType === 'average') {
+                    const targetAverage = parseFloat(document.getElementById('targetValue').value);
+                    validateScore(targetAverage, "Hedef Ortalama");
+                    const required = calculateMinimumFinal(ders, vize, targetAverage);
+                    const isImpossible = required > 100;
+
+                    results += `
+                        <div class="result-item">
+                            <div class="result-title">📋 Seçili Bilgiler</div>
+                            <div style="font-size: 13px; color: #666;">
+                                <strong>Yıl:</strong> ${year} | <strong>Sınıf:</strong> ${classLevel}. Sınıf
+                            </div>
+                        </div>
+                    `;
+                    results += formatResult(
+                        `🎯 ${targetAverage} Ortalama için Gereken Minimum Final`,
+                        required,
+                        isImpossible
+                    );
+                }
+
+                document.getElementById('resultsContent').innerHTML = results;
+                document.getElementById('results').classList.add('show');
+                window.scrollTo({ top: document.getElementById('results').offsetTop - 100, behavior: 'smooth' });
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        // Sınıf seçildiğinde kursları göster
+        document.getElementById('class').addEventListener('change', function () {
+            const targetType = document.getElementById('targetType').value;
+            if (targetType === 'semester') {
+                renderCourses();
+            }
+        });
+
+        // İlk çalıştırmada hedef giriş alanını güncelle
+        updateTargetInput();
+    </script>
+
+</body>
+
+</html>

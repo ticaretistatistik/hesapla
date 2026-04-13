@@ -1,0 +1,50 @@
+{
+  "harfNotlari": {
+    "AA": 91,
+    "BA": 81,
+    "BB": 71,
+    "CB": 61,
+    "CC": 51,
+    "CD": 41,
+    "DD": 36,
+    "DF": 31,
+    "F": 0
+  },
+  "gradeToGPA": {
+    "AA": 4.0,
+    "BA": 3.5,
+    "BB": 3.0,
+    "CB": 2.5,
+    "CC": 2.0,
+    "CD": 1.5,
+    "DD": 1.0,
+    "DF": 0.5,
+    "F": 0.0
+  },
+  "dersBilgileri": {
+    "1": {
+      "vize": 0.4,
+      "final": 0.6,
+      "quiz": 0
+    },
+    "2": {
+      "vize": 0.4,
+      "final": 0.6,
+      "quiz": 0
+    },
+    "3": {
+      "vize": 0.4,
+      "final": 0.6,
+      "quiz": 0
+    },
+    "4": {
+      "vize": 0.4,
+      "final": 0.6,
+      "quiz": 0
+    }
+  },
+  "sartliGecisNotu": 31,
+  "gecisNotu": 41,
+  "minimumFinal": 0,
+  "maximumFinal": 100
+}
