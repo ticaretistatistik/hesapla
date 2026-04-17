@@ -492,7 +492,6 @@
             gecisNotu = Number(CONFIG.gecisNotu ?? 41);
             sartliGecisNotu = Number(CONFIG.sartliGecisNotu ?? 31);
             mufredat = muf;
-            console.log('✓ Config ve Mufredat yüklendi');
         })
         .catch(e => {
             console.error('Hata: Config dosyaları yüklenemedi', e);
@@ -587,23 +586,38 @@
             const coursesContent = document.getElementById('coursesContent');
 
             coursesContent.innerHTML = '';
-            semester.dersler.forEach(ders => {
+            semester.dersler.forEach((ders, courseIndex) => {
+                if (typeof ders !== 'object' || ders === null) {
+                    return;
+                }
+
+                const courseName = typeof ders.ad === 'string' ? ders.ad.trim() : '';
+                const weights = {
+                    vize: Number(ders.vize),
+                    final: Number(ders.final),
+                    quiz: Number(ders.quiz)
+                };
+
+                if (!courseName || !Number.isFinite(weights.vize) || !Number.isFinite(weights.final) || !Number.isFinite(weights.quiz)) {
+                    return;
+                }
+
                 const courseItem = document.createElement('div');
                 courseItem.className = 'course-item';
                 courseItem.innerHTML = `
-                    <div class="course-name">${ders}</div>
+                    <div class="course-name">${courseName}</div>
                     <div class="course-inputs">
                         <div class="course-input-group">
                             <label>Vize</label>
-                            <input type="number" class="course-vize" min="0" max="100" step="0.01" placeholder="0-100" data-ders="${ders}">
+                            <input type="number" class="course-vize" min="0" max="100" step="0.01" placeholder="0-100" data-course-index="${courseIndex}" data-ders="${courseName}" data-vize-weight="${weights.vize}" data-final-weight="${weights.final}" data-quiz-weight="${weights.quiz}">
                         </div>
                         <div class="course-input-group">
                             <label>Final</label>
-                            <input type="number" class="course-final" min="0" max="100" step="0.01" placeholder="0-100" data-ders="${ders}">
+                            <input type="number" class="course-final" min="0" max="100" step="0.01" placeholder="0-100" data-course-index="${courseIndex}">
                         </div>
                         <div class="course-input-group">
                             <label>Quiz (Opsiyonel)</label>
-                            <input type="number" class="course-quiz" min="0" max="100" step="0.01" placeholder="0-100" data-ders="${ders}">
+                            <input type="number" class="course-quiz" min="0" max="100" step="0.01" placeholder="0-100" data-course-index="${courseIndex}">
                         </div>
                     </div>
                 `;
@@ -707,15 +721,27 @@
                     let detailsHtml = '';
 
                     courseInputs.forEach(vizeInput => {
-                        const dersAdi = vizeInput.dataset.ders;
+                        const dersAdi = vizeInput.dataset.ders || 'Ders';
+                        const courseIndex = vizeInput.dataset.courseIndex;
+                        const vizeWeight = Number(vizeInput.dataset.vizeWeight);
+                        const finalWeight = Number(vizeInput.dataset.finalWeight);
+                        const quizWeight = Number(vizeInput.dataset.quizWeight);
                         const vizeVal = vizeInput.value ? parseFloat(vizeInput.value) : null;
-                        const finalInput = document.querySelector(`.course-final[data-ders="${dersAdi}"]`);
+                        const finalInput = document.querySelector(`.course-final[data-course-index="${courseIndex}"]`);
                         const finalVal = finalInput.value ? parseFloat(finalInput.value) : null;
-                        const quizInput = document.querySelector(`.course-quiz[data-ders="${dersAdi}"]`);
+                        const quizInput = document.querySelector(`.course-quiz[data-course-index="${courseIndex}"]`);
                         const quizVal = quizInput.value ? parseFloat(quizInput.value) : null;
 
+                        if (!Number.isFinite(vizeWeight) || !Number.isFinite(finalWeight) || !Number.isFinite(quizWeight)) {
+                            return;
+                        }
+
                         if (vizeVal !== null && finalVal !== null) {
-                            const courseGrade = vizeVal * ders.vize + finalVal * ders.final + (quizVal !== null ? quizVal * ders.quiz : 0);
+                            validateScore(vizeVal, `${dersAdi} vize`);
+                            validateScore(finalVal, `${dersAdi} final`);
+                            if (quizVal !== null) validateScore(quizVal, `${dersAdi} quiz`);
+
+                            const courseGrade = vizeVal * vizeWeight + finalVal * finalWeight + (quizVal !== null ? quizVal * quizWeight : 0);
                             const grade = findGrade(courseGrade);
                             const gpa = gradeToGPA[grade];
                             totalGPA += gpa;
