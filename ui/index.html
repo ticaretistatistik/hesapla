@@ -537,6 +537,97 @@
             font-size: 13px;
         }
 
+        .course-subsection-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 16px 0 8px;
+        }
+
+        .course-subsection-label:first-of-type {
+            margin-top: 0;
+        }
+
+        .course-weight-hint {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            margin-top: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .course-weight-hint.invalid {
+            color: var(--bad);
+        }
+
+        .weights-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .weight-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .weight-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .weight-input-wrap {
+            position: relative;
+        }
+
+        .weight-input-wrap input {
+            padding-right: 30px;
+        }
+
+        .weight-suffix {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--muted);
+            pointer-events: none;
+        }
+
+        .weight-hint {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+
+        .weight-hint #weightSum {
+            font-weight: 500;
+            color: var(--ink-2);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .weight-hint.invalid,
+        .weight-hint.invalid #weightSum {
+            color: var(--bad);
+        }
+
         footer {
             margin-top: 56px;
             padding-top: 24px;
@@ -662,11 +753,52 @@
                     </div>
                 </div>
 
+                <div class="form-group" id="weightsSection">
+                    <label>Ağırlıklar</label>
+                    <div class="weights-row">
+                        <div class="weight-field">
+                            <span class="weight-label">Vize</span>
+                            <div class="weight-input-wrap">
+                                <input type="number" id="vizeWeight" min="0" max="100" step="1" inputmode="numeric"
+                                    value="40" aria-label="Vize ağırlığı (%)">
+                                <span class="weight-suffix">%</span>
+                            </div>
+                        </div>
+                        <div class="weight-field">
+                            <span class="weight-label">Final</span>
+                            <div class="weight-input-wrap">
+                                <input type="number" id="finalWeight" min="0" max="100" step="1" inputmode="numeric"
+                                    value="60" aria-label="Final ağırlığı (%)">
+                                <span class="weight-suffix">%</span>
+                            </div>
+                        </div>
+                        <div class="weight-field">
+                            <span class="weight-label">Quiz</span>
+                            <div class="weight-input-wrap">
+                                <input type="number" id="quizWeight" min="0" max="100" step="1" inputmode="numeric"
+                                    value="0" aria-label="Quiz ağırlığı (%)">
+                                <span class="weight-suffix">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weight-hint" id="weightHint">
+                        <span>Sınıf seçildiğinde müfredattan doldurulur · istediğin gibi değiştirebilirsin.</span>
+                        <span id="weightSum">Toplam 100%</span>
+                    </div>
+                </div>
+
                 <div class="form-group" id="vizePuanSection">
                     <label for="vizePuan">Vize puanı</label>
                     <input type="number" id="vizePuan" min="0" max="100" step="0.01" placeholder="0 — 100" required
                         inputmode="decimal">
                     <div class="error" id="vizeError"></div>
+                </div>
+
+                <div class="form-group" id="quizPuanSection" style="display: none;">
+                    <label for="quizPuan">Quiz puanı</label>
+                    <input type="number" id="quizPuan" min="0" max="100" step="0.01" placeholder="0 — 100"
+                        inputmode="decimal">
+                    <div class="error" id="quizError"></div>
                 </div>
 
                 <div class="form-group">
@@ -752,6 +884,9 @@
                 gecisNotu = Number(CONFIG.gecisNotu ?? 41);
                 sartliGecisNotu = Number(CONFIG.sartliGecisNotu ?? 31);
                 mufredat = muf;
+                const currentClass = document.getElementById('class').value;
+                if (currentClass) setClassWeights(currentClass);
+                else updateWeightSum();
             })
             .catch(e => {
                 console.error('Config dosyaları yüklenemedi', e);
@@ -783,6 +918,8 @@
             const vizeSection = document.getElementById('vizePuanSection');
             const vizePuanInput = document.getElementById('vizePuan');
             const targetGroup = document.getElementById('targetGroup');
+            const weightsSection = document.getElementById('weightsSection');
+            const quizPuanSection = document.getElementById('quizPuanSection');
 
             coursesSection.classList.remove('show');
             clearBanner();
@@ -791,10 +928,14 @@
                 vizeSection.style.display = 'none';
                 vizePuanInput.removeAttribute('required');
                 targetGroup.style.display = 'none';
+                weightsSection.style.display = 'none';
+                quizPuanSection.style.display = 'none';
             } else {
                 vizeSection.style.display = 'block';
                 vizePuanInput.setAttribute('required', 'required');
                 targetGroup.style.display = 'block';
+                weightsSection.style.display = 'block';
+                updateWeightSum();
             }
 
             if (targetType === 'passing') {
@@ -879,26 +1020,51 @@
                     return;
                 }
 
+                const vizePct = Math.round(weights.vize * 100);
+                const finalPct = Math.round(weights.final * 100);
+                const quizPct = Math.round(weights.quiz * 100);
+
                 const courseItem = document.createElement('div');
                 courseItem.className = 'course-item';
+                courseItem.dataset.courseIndex = courseIndex;
                 courseItem.innerHTML = `
                     <div class="course-name">${courseName}</div>
+                    <div class="course-subsection-label">Puanlar</div>
                     <div class="course-inputs">
                         <div class="course-input-group">
                             <label>Vize</label>
-                            <input type="number" class="course-vize" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" data-course-index="${courseIndex}" data-ders="${courseName}" data-vize-weight="${weights.vize}" data-final-weight="${weights.final}" data-quiz-weight="${weights.quiz}">
+                            <input type="number" class="course-vize" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" data-course-index="${courseIndex}" data-ders="${courseName}">
                         </div>
                         <div class="course-input-group">
                             <label>Final</label>
                             <input type="number" class="course-final" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" data-course-index="${courseIndex}">
                         </div>
                         <div class="course-input-group">
-                            <label>Quiz · ops.</label>
+                            <label>Quiz</label>
                             <input type="number" class="course-quiz" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" data-course-index="${courseIndex}">
                         </div>
                     </div>
+                    <div class="course-subsection-label">Ağırlıklar (%)</div>
+                    <div class="course-inputs">
+                        <div class="course-input-group">
+                            <label>Vize %</label>
+                            <input type="number" class="course-vize-weight" min="0" max="100" step="1" inputmode="numeric" value="${vizePct}" data-course-index="${courseIndex}">
+                        </div>
+                        <div class="course-input-group">
+                            <label>Final %</label>
+                            <input type="number" class="course-final-weight" min="0" max="100" step="1" inputmode="numeric" value="${finalPct}" data-course-index="${courseIndex}">
+                        </div>
+                        <div class="course-input-group">
+                            <label>Quiz %</label>
+                            <input type="number" class="course-quiz-weight" min="0" max="100" step="1" inputmode="numeric" value="${quizPct}" data-course-index="${courseIndex}">
+                        </div>
+                    </div>
+                    <div class="course-weight-hint" data-course-index="${courseIndex}">Toplam ${vizePct + finalPct + quizPct}%</div>
                 `;
                 coursesContent.appendChild(courseItem);
+
+                const weightInputs = courseItem.querySelectorAll('.course-vize-weight, .course-final-weight, .course-quiz-weight');
+                weightInputs.forEach(inp => inp.addEventListener('input', () => updateCourseWeightHint(courseIndex)));
             });
 
             document.querySelectorAll('.tab-btn').forEach((btn, i) => {
@@ -914,10 +1080,75 @@
             }
         }
 
-        function calculateMinimumFinal(ders, vize, targetScore) {
+        function calculateMinimumFinal(weights, vize, quiz, targetScore) {
             validateScore(vize, "Vize");
             validateScore(targetScore, "Hedef puan");
-            return (targetScore - vize * ders.vize) / ders.final;
+            if (!weights || !Number.isFinite(weights.final) || weights.final <= 0) {
+                throw new Error('Final ağırlığı sıfırdan büyük olmalıdır.');
+            }
+            const quizContrib = weights.quiz > 0 && Number.isFinite(quiz) ? quiz * weights.quiz : 0;
+            return (targetScore - vize * weights.vize - quizContrib) / weights.final;
+        }
+
+        function setClassWeights(classLevel) {
+            if (!classLevel || !dersBilgileri || !dersBilgileri[classLevel]) return;
+            const w = dersBilgileri[classLevel];
+            const vize = Math.round(Number(w.vize ?? 0) * 100);
+            const final = Math.round(Number(w.final ?? 0) * 100);
+            const quiz = Math.round(Number(w.quiz ?? 0) * 100);
+            document.getElementById('vizeWeight').value = vize;
+            document.getElementById('finalWeight').value = final;
+            document.getElementById('quizWeight').value = quiz;
+            updateWeightSum();
+        }
+
+        function updateWeightSum() {
+            const vizePct = parseFloat(document.getElementById('vizeWeight').value) || 0;
+            const finalPct = parseFloat(document.getElementById('finalWeight').value) || 0;
+            const quizPct = parseFloat(document.getElementById('quizWeight').value) || 0;
+            const sum = vizePct + finalPct + quizPct;
+            const hintEl = document.getElementById('weightHint');
+            const sumEl = document.getElementById('weightSum');
+            sumEl.textContent = `Toplam ${Number.isInteger(sum) ? sum : sum.toFixed(1)}%`;
+            hintEl.classList.toggle('invalid', Math.abs(sum - 100) > 0.1);
+
+            const quizSection = document.getElementById('quizPuanSection');
+            const quizInput = document.getElementById('quizPuan');
+            if (quizPct > 0) {
+                quizSection.style.display = 'block';
+                quizInput.setAttribute('required', 'required');
+            } else {
+                quizSection.style.display = 'none';
+                quizInput.removeAttribute('required');
+                quizInput.value = '';
+            }
+        }
+
+        function getMainWeights() {
+            const vizePct = parseFloat(document.getElementById('vizeWeight').value);
+            const finalPct = parseFloat(document.getElementById('finalWeight').value);
+            const quizPct = parseFloat(document.getElementById('quizWeight').value);
+            [['Vize', vizePct], ['Final', finalPct], ['Quiz', quizPct]].forEach(([n, v]) => {
+                if (!Number.isFinite(v) || v < 0 || v > 100) {
+                    throw new Error(`${n} ağırlığı 0 ile 100 arasında olmalıdır.`);
+                }
+            });
+            const sum = vizePct + finalPct + quizPct;
+            if (Math.abs(sum - 100) > 0.1) {
+                throw new Error(`Ağırlıkların toplamı 100% olmalı (şu an ${Number.isInteger(sum) ? sum : sum.toFixed(1)}%).`);
+            }
+            return { vize: vizePct / 100, final: finalPct / 100, quiz: quizPct / 100, vizePct, finalPct, quizPct };
+        }
+
+        function updateCourseWeightHint(courseIndex) {
+            const v = parseFloat(document.querySelector(`.course-vize-weight[data-course-index="${courseIndex}"]`).value) || 0;
+            const f = parseFloat(document.querySelector(`.course-final-weight[data-course-index="${courseIndex}"]`).value) || 0;
+            const q = parseFloat(document.querySelector(`.course-quiz-weight[data-course-index="${courseIndex}"]`).value) || 0;
+            const sum = v + f + q;
+            const hint = document.querySelector(`.course-weight-hint[data-course-index="${courseIndex}"]`);
+            if (!hint) return;
+            hint.textContent = `Toplam ${Number.isInteger(sum) ? sum : sum.toFixed(1)}%`;
+            hint.classList.toggle('invalid', Math.abs(sum - 100) > 0.1);
         }
 
         function findGrade(score) {
@@ -971,10 +1202,24 @@
 
             try {
                 let vize = null;
+                let quiz = null;
+                let weights = null;
 
                 if (targetType !== 'semester') {
+                    weights = getMainWeights();
+
                     vize = parseFloat(document.getElementById('vizePuan').value);
                     validateScore(vize, "Vize");
+
+                    if (weights.quiz > 0) {
+                        const quizRaw = document.getElementById('quizPuan').value;
+                        if (quizRaw === '' || quizRaw === null) {
+                            showBanner('Quiz ağırlığı 0%\'dan büyük. Lütfen quiz puanınızı giriniz.');
+                            return;
+                        }
+                        quiz = parseFloat(quizRaw);
+                        validateScore(quiz, "Quiz");
+                    }
 
                     const targetValue = document.getElementById('targetValue');
                     if (!targetValue || !targetValue.value) {
@@ -983,7 +1228,6 @@
                     }
                 }
 
-                const ders = dersBilgileri[classLevel];
                 let results = '';
 
                 if (targetType === 'semester') {
@@ -995,39 +1239,52 @@
                     courseInputs.forEach(vizeInput => {
                         const dersAdi = vizeInput.dataset.ders || 'Ders';
                         const courseIndex = vizeInput.dataset.courseIndex;
-                        const vizeWeight = Number(vizeInput.dataset.vizeWeight);
-                        const finalWeight = Number(vizeInput.dataset.finalWeight);
-                        const quizWeight = Number(vizeInput.dataset.quizWeight);
+                        const vizeWeightPct = parseFloat(document.querySelector(`.course-vize-weight[data-course-index="${courseIndex}"]`).value);
+                        const finalWeightPct = parseFloat(document.querySelector(`.course-final-weight[data-course-index="${courseIndex}"]`).value);
+                        const quizWeightPct = parseFloat(document.querySelector(`.course-quiz-weight[data-course-index="${courseIndex}"]`).value);
+
+                        if (![vizeWeightPct, finalWeightPct, quizWeightPct].every(v => Number.isFinite(v) && v >= 0 && v <= 100)) {
+                            throw new Error(`${dersAdi} için ağırlıklar 0 ile 100 arasında olmalıdır.`);
+                        }
+
                         const vizeVal = vizeInput.value ? parseFloat(vizeInput.value) : null;
                         const finalInput = document.querySelector(`.course-final[data-course-index="${courseIndex}"]`);
                         const finalVal = finalInput.value ? parseFloat(finalInput.value) : null;
                         const quizInput = document.querySelector(`.course-quiz[data-course-index="${courseIndex}"]`);
                         const quizVal = quizInput.value ? parseFloat(quizInput.value) : null;
 
-                        if (!Number.isFinite(vizeWeight) || !Number.isFinite(finalWeight) || !Number.isFinite(quizWeight)) {
-                            return;
+                        if (vizeVal === null || finalVal === null) return;
+
+                        const weightSumPct = vizeWeightPct + finalWeightPct + quizWeightPct;
+                        if (Math.abs(weightSumPct - 100) > 0.1) {
+                            throw new Error(`${dersAdi} için ağırlık toplamı 100% olmalı (şu an ${Number.isInteger(weightSumPct) ? weightSumPct : weightSumPct.toFixed(1)}%).`);
                         }
 
-                        if (vizeVal !== null && finalVal !== null) {
-                            validateScore(vizeVal, `${dersAdi} vize`);
-                            validateScore(finalVal, `${dersAdi} final`);
-                            if (quizVal !== null) validateScore(quizVal, `${dersAdi} quiz`);
-
-                            const courseGrade = vizeVal * vizeWeight + finalVal * finalWeight + (quizVal !== null ? quizVal * quizWeight : 0);
-                            const grade = findGrade(courseGrade);
-                            const gpa = gradeToGPA[grade];
-                            totalGPA += gpa;
-                            courseCount++;
-                            detailsHtml += `
-                                <div class="course-detail">
-                                    <span class="course-detail-name">${dersAdi}</span>
-                                    <span class="course-detail-meta">
-                                        <span class="course-detail-score">${courseGrade.toFixed(2)}</span>
-                                        <span class="grade-badge grade-${grade}">${grade}</span>
-                                        <span>${gpa.toFixed(2)}</span>
-                                    </span>
-                                </div>`;
+                        if (quizWeightPct > 0 && quizVal === null) {
+                            throw new Error(`${dersAdi} için quiz ağırlığı ${quizWeightPct}%. Quiz puanını giriniz.`);
                         }
+
+                        validateScore(vizeVal, `${dersAdi} vize`);
+                        validateScore(finalVal, `${dersAdi} final`);
+                        if (quizVal !== null) validateScore(quizVal, `${dersAdi} quiz`);
+
+                        const vizeWeight = vizeWeightPct / 100;
+                        const finalWeight = finalWeightPct / 100;
+                        const quizWeight = quizWeightPct / 100;
+                        const courseGrade = vizeVal * vizeWeight + finalVal * finalWeight + (quizVal !== null ? quizVal * quizWeight : 0);
+                        const grade = findGrade(courseGrade);
+                        const gpa = gradeToGPA[grade];
+                        totalGPA += gpa;
+                        courseCount++;
+                        detailsHtml += `
+                            <div class="course-detail">
+                                <span class="course-detail-name">${dersAdi} <span style="color: var(--muted); font-family: var(--font-mono); font-size: 11px;">· ${vizeWeightPct}·${finalWeightPct}·${quizWeightPct}%</span></span>
+                                <span class="course-detail-meta">
+                                    <span class="course-detail-score">${courseGrade.toFixed(2)}</span>
+                                    <span class="grade-badge grade-${grade}">${grade}</span>
+                                    <span>${gpa.toFixed(2)}</span>
+                                </span>
+                            </div>`;
                     });
 
                     if (courseCount === 0) {
@@ -1057,11 +1314,11 @@
                         </div>
                     `;
                 } else if (targetType === 'passing') {
-                    const requiredGecis = calculateMinimumFinal(ders, vize, gecisNotu);
+                    const requiredGecis = calculateMinimumFinal(weights, vize, quiz, gecisNotu);
                     const gradeGecis = findGrade(gecisNotu);
                     const isImpossibleGecis = requiredGecis > 100;
 
-                    const requiredSartli = calculateMinimumFinal(ders, vize, sartliGecisNotu);
+                    const requiredSartli = calculateMinimumFinal(weights, vize, quiz, sartliGecisNotu);
                     const gradeSartli = findGrade(sartliGecisNotu);
                     const isImpossibleSartli = requiredSartli > 100;
 
@@ -1072,6 +1329,8 @@
                                 <span><strong>Yıl</strong> ${year}</span>
                                 <span><strong>Sınıf</strong> ${classLevel}. sınıf</span>
                                 <span><strong>Vize</strong> ${vize.toFixed(2)}</span>
+                                ${quiz !== null ? `<span><strong>Quiz</strong> ${quiz.toFixed(2)}</span>` : ''}
+                                <span><strong>Ağırlık</strong> ${weights.vizePct}·${weights.finalPct}·${weights.quizPct}%</span>
                             </div>
                         </div>
                     `;
@@ -1095,7 +1354,7 @@
                         return;
                     }
                     const targetScore = harfNotlari[hedefHarf];
-                    const required = calculateMinimumFinal(ders, vize, targetScore);
+                    const required = calculateMinimumFinal(weights, vize, quiz, targetScore);
                     const isImpossible = required > 100;
 
                     results += `
@@ -1105,6 +1364,8 @@
                                 <span><strong>Yıl</strong> ${year}</span>
                                 <span><strong>Sınıf</strong> ${classLevel}. sınıf</span>
                                 <span><strong>Vize</strong> ${vize.toFixed(2)}</span>
+                                ${quiz !== null ? `<span><strong>Quiz</strong> ${quiz.toFixed(2)}</span>` : ''}
+                                <span><strong>Ağırlık</strong> ${weights.vizePct}·${weights.finalPct}·${weights.quizPct}%</span>
                             </div>
                         </div>
                     `;
@@ -1116,7 +1377,7 @@
                 } else if (targetType === 'average') {
                     const targetAverage = parseFloat(document.getElementById('targetValue').value);
                     validateScore(targetAverage, "Hedef ortalama");
-                    const required = calculateMinimumFinal(ders, vize, targetAverage);
+                    const required = calculateMinimumFinal(weights, vize, quiz, targetAverage);
                     const isImpossible = required > 100;
 
                     results += `
@@ -1126,6 +1387,8 @@
                                 <span><strong>Yıl</strong> ${year}</span>
                                 <span><strong>Sınıf</strong> ${classLevel}. sınıf</span>
                                 <span><strong>Vize</strong> ${vize.toFixed(2)}</span>
+                                ${quiz !== null ? `<span><strong>Quiz</strong> ${quiz.toFixed(2)}</span>` : ''}
+                                <span><strong>Ağırlık</strong> ${weights.vizePct}·${weights.finalPct}·${weights.quizPct}%</span>
                             </div>
                         </div>
                     `;
@@ -1148,16 +1411,33 @@
             clearBanner();
             document.getElementById('results').classList.remove('show');
             document.getElementById('resultsContent').innerHTML = '';
-            setTimeout(updateTargetInput, 0);
+            setTimeout(() => {
+                const cls = document.getElementById('class').value;
+                if (cls && dersBilgileri[cls]) {
+                    setClassWeights(cls);
+                } else {
+                    document.getElementById('vizeWeight').value = 40;
+                    document.getElementById('finalWeight').value = 60;
+                    document.getElementById('quizWeight').value = 0;
+                }
+                updateTargetInput();
+            }, 0);
         });
 
         document.getElementById('class').addEventListener('change', function () {
             const targetType = document.getElementById('targetType').value;
             if (targetType === 'semester') {
                 renderCourses();
+            } else {
+                setClassWeights(this.value);
             }
         });
 
+        ['vizeWeight', 'finalWeight', 'quizWeight'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateWeightSum);
+        });
+
+        updateWeightSum();
         updateTargetInput();
     </script>
 </body>
