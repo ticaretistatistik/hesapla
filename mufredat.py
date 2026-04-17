@@ -1,4 +1,4 @@
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from typing import List, Literal
 import json
 import os
@@ -35,7 +35,7 @@ mufredat = {
                 donem="Güz",
                 dersler=[
                     Ders(ad="Genel İngilizce 1"),
-                    Ders(ad="Matematik 1"),
+                    Ders(ad="Matematik 1", vize=0.3, final=0.7),
                     Ders(ad="İstatistik 1"),
                     Ders(ad="Olasılık 1"),
                     Ders(ad="Doğrusal Programlama 1"),
@@ -47,7 +47,7 @@ mufredat = {
                 donem="Bahar",
                 dersler=[
                     Ders(ad="Genel İngilizce 2"),
-                    Ders(ad="Matematik 2"),
+                    Ders(ad="Matematik 2", vize=0.3, final=0.7),
                     Ders(ad="İstatistik 2"),
                     Ders(ad="Olasılık 2"),
                     Ders(ad="Doğrusal Programlama 2"),
