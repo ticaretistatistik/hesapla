@@ -14,7 +14,7 @@ class Ders:
     # Ders ağırlıkları: Vize + Final + Quiz = 1.0 olmalı
     vize: float = 0.4
     final: float = 0.6
-    quiz: float = 0
+    quiz: float = 0 # quiz veya ödev, aynı anlamda kullanıldı.
 
 
 @dataclass
@@ -70,7 +70,7 @@ mufredat = {
             DonemDersleri(
                 donem="Bahar",
                 dersler=[
-                    Ders(ad="Veri Analizinde Bilgisayar Programlama 2"),
+                    Ders(ad="Veri Analizinde Bilgisayar Programlama 2", vize=0.2, quiz=0.2, final=0.6),
                     Ders(ad="Örnekleme 2"),
                     Ders(ad="Kantitatif Karar Verme Teknikleri"),
                     Ders(ad="Optimizasyon"),
