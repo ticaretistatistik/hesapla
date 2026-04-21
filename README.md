@@ -7,7 +7,7 @@
 - Geçiş notuna göre minimum final hesaplama
 - Hedef harf notuna göre minimum final hesaplama
 - Hedef ders ortalamasına göre minimum final hesaplama
-- Dönem dersleri için 4'lük sistem dönem GPA hesaplama
+- Dönem dersleri için 4'lük sistem dönem AGNO hesaplama
 - Müfredat verisini JSON üzerinden dinamik yükleme
 
 ## Proje Yapısı

@@ -6,45 +6,59 @@
         "dersler": [
           {
             "ad": "Genel İngilizce 1",
+            "akts": 2,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Matematik 1",
+            "akts": 6,
             "vize": 0.3,
             "final": 0.7,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "İstatistik 1",
+            "akts": 6,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Olasılık 1",
+            "akts": 6,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Doğrusal Programlama 1",
+            "akts": 6,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Türk Dili 1",
+            "akts": 2,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Atatürk İlkeleri ve İnkılap Tarihi 1",
+            "akts": 2,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           }
         ]
       },
@@ -53,45 +67,59 @@
         "dersler": [
           {
             "ad": "Genel İngilizce 2",
+            "akts": 2,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Matematik 2",
+            "akts": 6,
             "vize": 0.3,
             "final": 0.7,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "İstatistik 2",
+            "akts": 6,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Olasılık 2",
+            "akts": 6,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Doğrusal Programlama 2",
+            "akts": 6,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Türk Dili 2",
+            "akts": 2,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Atatürk İlkeleri ve İnkılap Tarihi 2",
+            "akts": 2,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           }
         ]
       }
@@ -102,33 +130,51 @@
         "dersler": [
           {
             "ad": "Veri Analizinde Bilgisayar Programlama 1",
+            "akts": 5,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "İktisat",
+            "akts": 5,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Örnekleme 1",
+            "akts": 6,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Matematiksel İstatistik",
+            "akts": 6,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Yöneylem Araştırması",
+            "akts": 6,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
+          },
+          {
+            "ad": "Üniversite Seçmeli Ders",
+            "akts": 2,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
           }
         ]
       },
@@ -137,27 +183,51 @@
         "dersler": [
           {
             "ad": "Veri Analizinde Bilgisayar Programlama 2",
-            "vize": 0.4,
+            "akts": 5,
+            "vize": 0.2,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0.2,
+            "type": "Zorunlu"
           },
           {
             "ad": "Örnekleme 2",
+            "akts": 5,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Kantitatif Karar Verme Teknikleri",
+            "akts": 5,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Optimizasyon",
+            "akts": 5,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
+          },
+          {
+            "ad": "Seçmeli Ders",
+            "akts": 5,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
+          },
+          {
+            "ad": "Seçmeli Ders",
+            "akts": 5,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
           }
         ]
       }
@@ -168,27 +238,51 @@
         "dersler": [
           {
             "ad": "Deney Düzenleme 1",
+            "akts": 6,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Uygulamalı İstatistil 1",
+            "akts": 6,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Regresyon Analizi 1",
+            "akts": 6,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Açıklayıcı Veri Analizi",
+            "akts": 5,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
+          },
+          {
+            "ad": "Seçmeli Ders",
+            "akts": 5,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
+          },
+          {
+            "ad": "Üniversite Seçmeli Ders",
+            "akts": 2,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
           }
         ]
       },
@@ -197,27 +291,51 @@
         "dersler": [
           {
             "ad": "Parametrik Olmayan İstatistiksel Yöntemler",
+            "akts": 4,
             "vize": 0.3,
             "final": 0.5,
-            "quiz": 0.2
+            "quiz": 0.2,
+            "type": "Zorunlu"
           },
           {
             "ad": "Zaman Serileri Analizi",
+            "akts": 4,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Regresyon Analizi 2",
+            "akts": 5,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Mesleki İngilizce",
+            "akts": 4,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
+          },
+          {
+            "ad": "Seçmeli Ders",
+            "akts": 5,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
+          },
+          {
+            "ad": "Üniversite Seçmeli Ders",
+            "akts": 2,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
           }
         ]
       }
@@ -228,21 +346,59 @@
         "dersler": [
           {
             "ad": "Çok Değişkenli Analiz 1",
+            "akts": 5,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Ekonometri 1",
+            "akts": 5,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Kariyer Planlama",
+            "akts": 0,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
+          },
+          {
+            "ad": "Seçmeli Ders",
+            "akts": 5,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
+          },
+          {
+            "ad": "Seçmeli Ders",
+            "akts": 5,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
+          },
+          {
+            "ad": "Seçmeli Ders",
+            "akts": 5,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
+          },
+          {
+            "ad": "Seçmeli Ders",
+            "akts": 5,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
           }
         ]
       },
@@ -251,27 +407,59 @@
         "dersler": [
           {
             "ad": "Çok Değişkenli Analiz 2",
+            "akts": 4,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Ekonometri 2",
+            "akts": 4,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Makine Öğrenmesi",
+            "akts": 4,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
           },
           {
             "ad": "Bitirme Projesi",
+            "akts": 3,
             "vize": 0.4,
             "final": 0.6,
-            "quiz": 0
+            "quiz": 0,
+            "type": "Zorunlu"
+          },
+          {
+            "ad": "Seçmeli Ders",
+            "akts": 5,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
+          },
+          {
+            "ad": "Seçmeli Ders",
+            "akts": 5,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
+          },
+          {
+            "ad": "Seçmeli Ders",
+            "akts": 5,
+            "vize": 0.4,
+            "final": 0.6,
+            "quiz": 0,
+            "type": "Seçmeli"
           }
         ]
       }
