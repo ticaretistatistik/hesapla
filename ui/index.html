@@ -451,13 +451,14 @@
 
         .courses-section {
             display: none;
-            margin-top: 28px;
-            padding-top: 24px;
-            border-top: 1px solid var(--line);
         }
 
         .courses-section.show {
             display: block;
+        }
+
+        #semesterHint {
+            margin-top: 14px;
         }
 
         .courses-title {
@@ -628,6 +629,107 @@
             color: var(--bad);
         }
 
+        .mode-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--line);
+            margin: 8px 0 28px;
+        }
+
+        .mode-tab {
+            flex: 1;
+            padding: 14px 4px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: -0.005em;
+            color: var(--muted);
+            cursor: pointer;
+            transition: color 140ms ease, border-color 140ms ease;
+        }
+
+        .mode-tab:hover {
+            color: var(--ink-2);
+        }
+
+        .mode-tab.active {
+            color: var(--ink);
+            border-bottom-color: var(--accent);
+        }
+
+        .mode-tab:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: rise 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+        }
+
+        .segmented {
+            display: flex;
+            gap: 0;
+            border: 1px solid var(--line-strong);
+            background: var(--surface);
+        }
+
+        .seg-btn {
+            flex: 1;
+            padding: 12px 8px;
+            background: transparent;
+            border: none;
+            border-right: 1px solid var(--line);
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: -0.005em;
+            color: var(--ink-2);
+            cursor: pointer;
+            transition: background 140ms ease, color 140ms ease;
+        }
+
+        .seg-btn:last-child {
+            border-right: none;
+        }
+
+        .seg-btn:hover {
+            background: var(--surface-2);
+        }
+
+        .seg-btn.active {
+            background: var(--accent);
+            color: var(--accent-ink);
+        }
+
+        .seg-btn.active:hover {
+            background: var(--accent);
+        }
+
+        .seg-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .target-hint {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
         footer {
             margin-top: 56px;
             padding-top: 24px;
@@ -687,6 +789,16 @@
                 width: 100%;
             }
 
+            .seg-btn {
+                padding: 11px 6px;
+                font-size: 13px;
+            }
+
+            .mode-tab {
+                padding: 12px 4px;
+                font-size: 13px;
+            }
+
             footer {
                 flex-direction: column;
                 align-items: flex-start;
@@ -723,7 +835,7 @@
             <h1 class="title">Final notu hesap makinesi.</h1>
             <p class="subtitle">
                 Vize puanınıza ve hedefinize göre ihtiyacınız olan minimum final notunu, alacağınız harf notunu ve
-                dönem AGNO'sunu hesaplar.
+                dönem GPA'sını hesaplar.
             </p>
 
             <div class="info-box">
@@ -753,95 +865,90 @@
                     </div>
                 </div>
 
-                <div class="form-group" id="weightsSection">
-                    <label>Ağırlıklar</label>
-                    <div class="weights-row">
-                        <div class="weight-field">
-                            <span class="weight-label">Vize</span>
-                            <div class="weight-input-wrap">
-                                <input type="number" id="vizeWeight" min="0" max="100" step="1" inputmode="numeric"
-                                    value="40" aria-label="Vize ağırlığı (%)">
-                                <span class="weight-suffix">%</span>
+                <div class="mode-tabs" role="tablist" aria-label="Hesaplama modu">
+                    <button type="button" class="mode-tab active" data-mode="single" role="tab"
+                        aria-selected="true" aria-controls="panel-single" id="tab-single">Tek Ders Finali</button>
+                    <button type="button" class="mode-tab" data-mode="semester" role="tab"
+                        aria-selected="false" aria-controls="panel-semester" id="tab-semester">Dönem Ortalaması</button>
+                </div>
+
+                <div class="tab-panel active" id="panel-single" role="tabpanel" aria-labelledby="tab-single">
+                    <div class="form-group" id="weightsSection">
+                        <label>Ağırlıklar</label>
+                        <div class="weights-row">
+                            <div class="weight-field">
+                                <span class="weight-label">Vize</span>
+                                <div class="weight-input-wrap">
+                                    <input type="number" id="vizeWeight" min="0" max="100" step="1" inputmode="numeric"
+                                        value="40" aria-label="Vize ağırlığı (%)">
+                                    <span class="weight-suffix">%</span>
+                                </div>
+                            </div>
+                            <div class="weight-field">
+                                <span class="weight-label">Final</span>
+                                <div class="weight-input-wrap">
+                                    <input type="number" id="finalWeight" min="0" max="100" step="1" inputmode="numeric"
+                                        value="60" aria-label="Final ağırlığı (%)">
+                                    <span class="weight-suffix">%</span>
+                                </div>
+                            </div>
+                            <div class="weight-field">
+                                <span class="weight-label">Quiz</span>
+                                <div class="weight-input-wrap">
+                                    <input type="number" id="quizWeight" min="0" max="100" step="1" inputmode="numeric"
+                                        value="0" aria-label="Quiz ağırlığı (%)">
+                                    <span class="weight-suffix">%</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="weight-field">
-                            <span class="weight-label">Final</span>
-                            <div class="weight-input-wrap">
-                                <input type="number" id="finalWeight" min="0" max="100" step="1" inputmode="numeric"
-                                    value="60" aria-label="Final ağırlığı (%)">
-                                <span class="weight-suffix">%</span>
-                            </div>
-                        </div>
-                        <div class="weight-field">
-                            <span class="weight-label">Quiz</span>
-                            <div class="weight-input-wrap">
-                                <input type="number" id="quizWeight" min="0" max="100" step="1" inputmode="numeric"
-                                    value="0" aria-label="Quiz ağırlığı (%)">
-                                <span class="weight-suffix">%</span>
-                            </div>
+                        <div class="weight-hint" id="weightHint">
+                            <span>Sınıf seçildiğinde müfredattan doldurulur · istediğin gibi değiştirebilirsin.</span>
+                            <span id="weightSum">Toplam 100%</span>
                         </div>
                     </div>
-                    <div class="weight-hint" id="weightHint">
-                        <span>Sınıf seçildiğinde müfredattan doldurulur · istediğin gibi değiştirebilirsin.</span>
-                        <span id="weightSum">Toplam 100%</span>
+
+                    <div class="form-group" id="vizePuanSection">
+                        <label for="vizePuan">Vize puanı</label>
+                        <input type="number" id="vizePuan" min="0" max="100" step="0.01" placeholder="0 — 100" required
+                            inputmode="decimal">
+                        <div class="error" id="vizeError"></div>
+                    </div>
+
+                    <div class="form-group" id="quizPuanSection" style="display: none;">
+                        <label for="quizPuan">Quiz puanı</label>
+                        <input type="number" id="quizPuan" min="0" max="100" step="0.01" placeholder="0 — 100"
+                            inputmode="decimal">
+                        <div class="error" id="quizError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hedefim</label>
+                        <div class="segmented" role="radiogroup" id="singleTarget" aria-label="Hedef türü">
+                            <button type="button" class="seg-btn active" data-target="passing" role="radio"
+                                aria-checked="true">Geçmek</button>
+                            <button type="button" class="seg-btn" data-target="grade" role="radio"
+                                aria-checked="false">Harf notu</button>
+                            <button type="button" class="seg-btn" data-target="average" role="radio"
+                                aria-checked="false">Ortalama</button>
+                        </div>
+                        <div class="target-hint" id="targetHint">Dersten geçmek için gereken minimum finali (ve şartlı geçiş eşiğini) gösterir.</div>
+                    </div>
+
+                    <div class="form-group" id="targetGroup" style="display: none;">
+                        <label for="targetValue" id="targetLabel">Hedef harf notu</label>
+                        <div id="targetInputContainer"></div>
+                        <div class="error" id="targetError"></div>
                     </div>
                 </div>
 
-                <div class="form-group" id="vizePuanSection">
-                    <label for="vizePuan">Vize puanı</label>
-                    <input type="number" id="vizePuan" min="0" max="100" step="0.01" placeholder="0 — 100" required
-                        inputmode="decimal">
-                    <div class="error" id="vizeError"></div>
+                <div class="tab-panel" id="panel-semester" role="tabpanel" aria-labelledby="tab-semester">
+                    <section id="coursesSection" class="courses-section show" aria-labelledby="coursesTitle">
+                        <h2 id="coursesTitle" class="courses-title">Ders notlarınız</h2>
+                        <div class="tab-buttons" id="semesterTabs" role="tablist"></div>
+                        <div id="coursesContent"></div>
+                        <p class="target-hint" id="semesterHint">Girdiğin derslerin vize/final/quiz notlarından dönem GPA'nı hesaplar. Sınıf seçtikten sonra dersler otomatik listelenir.</p>
+                    </section>
                 </div>
-
-                <div class="form-group" id="quizPuanSection" style="display: none;">
-                    <label for="quizPuan">Quiz puanı</label>
-                    <input type="number" id="quizPuan" min="0" max="100" step="0.01" placeholder="0 — 100"
-                        inputmode="decimal">
-                    <div class="error" id="quizError"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="targetType">Hedef türü</label>
-                    <select id="targetType" required onchange="updateTargetInput()">
-                        <option value="passing">Ders geçiş notu</option>
-                        <option value="grade">Ders harf notu</option>
-                        <option value="average">Ders ortalaması</option>
-                        <option value="semester">Dönem ortalaması</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="targetGroup">
-                    <label for="targetValue" id="targetLabel">Hedef harf notu</label>
-                    <div id="targetInputContainer">
-                        <select id="targetValue" required>
-                            <option value="">Seçiniz</option>
-                            <option value="AA">AA</option>
-                            <option value="BA">BA</option>
-                            <option value="BB">BB</option>
-                            <option value="CB">CB</option>
-                            <option value="CC">CC</option>
-                            <option value="CD">Geçer şartlı başarılı (CD)</option>
-                            <option value="DD">Şartlı başarılı (DD)</option>
-                            <option value="DF">Şartlı başarılı (DF)</option>
-                        </select>
-                    </div>
-                    <div class="error" id="targetError"></div>
-                </div>
-
-                <div class="form-group" id="gradeCourseGroup" style="display: none;">
-                    <label for="gradeCourseValue">Ders seç</label>
-                    <select id="gradeCourseValue" disabled>
-                        <option value="">Once sinif seciniz</option>
-                    </select>
-                    <div class="error" id="gradeCourseError"></div>
-                </div>
-
-                <section id="coursesSection" class="courses-section" aria-labelledby="coursesTitle">
-                    <h2 id="coursesTitle" class="courses-title">Ders notlarınız</h2>
-                    <div class="tab-buttons" id="semesterTabs" role="tablist"></div>
-                    <div id="coursesContent"></div>
-                </section>
 
                 <div class="button-row">
                     <button type="submit" class="btn-primary">Hesapla</button>
@@ -902,6 +1009,8 @@
             });
 
         let currentSemester = 0;
+        let activeMode = 'single';             // 'single' | 'semester'
+        let activeSingleTarget = 'passing';    // 'passing' | 'grade' | 'average'
 
         document.getElementById('year').value = '2025-2026';
 
@@ -918,128 +1027,52 @@
             banner.textContent = '';
         }
 
-        function getSeciliDersListesi() {
-            const classLevel = document.getElementById('class').value;
-            const year = document.getElementById('year').value;
-            if (!classLevel || !year || !mufredat[year] || !mufredat[year][classLevel]) {
-                return [];
-            }
-
-            return mufredat[year][classLevel].flatMap((semester, semesterIndex) => {
-                return semester.dersler.map((ders, courseIndex) => ({
-                    year,
-                    classLevel,
-                    semesterIndex,
-                    semesterName: semester.donem,
-                    courseIndex,
-                    ders
-                }));
-            });
-        }
-
-        function getSeciliHarfNotuDersi() {
-            const select = document.getElementById('gradeCourseValue');
-            const value = select.value;
-            if (!value) return null;
-
-            const [semesterIndexText, courseIndexText] = value.split(':');
-            const semesterIndex = Number(semesterIndexText);
-            const courseIndex = Number(courseIndexText);
-            const classLevel = document.getElementById('class').value;
-            const year = document.getElementById('year').value;
-
-            const semester = mufredat[year]?.[classLevel]?.[semesterIndex];
-            const ders = semester?.dersler?.[courseIndex];
-            if (!semester || !ders) return null;
-
-            return {
-                year,
-                classLevel,
-                semesterName: semester.donem,
-                semesterIndex,
-                courseIndex,
-                ders
-            };
-        }
-
-        function harfNotuDersleriniDoldur() {
-            const select = document.getElementById('gradeCourseValue');
-            const gradeCourseGroup = document.getElementById('gradeCourseGroup');
-            const dersListesi = getSeciliDersListesi();
-
-            select.innerHTML = '';
-
-            if (!dersListesi.length) {
-                select.disabled = true;
-                gradeCourseGroup.style.display = 'block';
-                select.innerHTML = '<option value="">Once sinif seciniz</option>';
-                return;
-            }
-
-            select.disabled = false;
-            gradeCourseGroup.style.display = 'block';
-
-            const ilkSecenek = document.createElement('option');
-            ilkSecenek.value = '';
-            ilkSecenek.textContent = 'Seçiniz';
-            select.appendChild(ilkSecenek);
-
-            dersListesi.forEach(item => {
-                const option = document.createElement('option');
-                option.value = `${item.semesterIndex}:${item.courseIndex}`;
-                option.textContent = `${item.semesterName} · ${item.ders.ad} (${item.ders.akts} AKTS)`;
-                select.appendChild(option);
-            });
-
-            select.value = `${dersListesi[0].semesterIndex}:${dersListesi[0].courseIndex}`;
-            seciliHarfNotuDersiAgirliklariniUygula();
-        }
-
-        function seciliHarfNotuDersiAgirliklariniUygula() {
-            const seciliDers = getSeciliHarfNotuDersi();
-            if (!seciliDers) return;
-
-            document.getElementById('vizeWeight').value = Math.round(Number(seciliDers.ders.vize ?? 0) * 100);
-            document.getElementById('finalWeight').value = Math.round(Number(seciliDers.ders.final ?? 0) * 100);
-            document.getElementById('quizWeight').value = Math.round(Number(seciliDers.ders.quiz ?? 0) * 100);
-            updateWeightSum();
-        }
-
-        function updateTargetInput() {
-            const targetType = document.getElementById('targetType').value;
-            const targetLabel = document.getElementById('targetLabel');
-            const container = document.getElementById('targetInputContainer');
-            const coursesSection = document.getElementById('coursesSection');
-            const vizeSection = document.getElementById('vizePuanSection');
-            const vizePuanInput = document.getElementById('vizePuan');
-            const targetGroup = document.getElementById('targetGroup');
-            const weightsSection = document.getElementById('weightsSection');
-            const quizPuanSection = document.getElementById('quizPuanSection');
-            const gradeCourseGroup = document.getElementById('gradeCourseGroup');
-
-            coursesSection.classList.remove('show');
+        function switchMode(mode) {
+            activeMode = mode;
             clearBanner();
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('resultsContent').innerHTML = '';
 
-            if (targetType === 'semester') {
-                vizeSection.style.display = 'none';
-                vizePuanInput.removeAttribute('required');
-                targetGroup.style.display = 'none';
-                gradeCourseGroup.style.display = 'none';
-                weightsSection.style.display = 'none';
-                quizPuanSection.style.display = 'none';
+            document.querySelectorAll('.mode-tab').forEach(btn => {
+                const isActive = btn.dataset.mode === mode;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.toggle('active', panel.id === `panel-${mode}`);
+            });
+
+            if (mode === 'semester') {
+                const classLevel = document.getElementById('class').value;
+                if (classLevel && mufredat[document.getElementById('year').value]
+                    && mufredat[document.getElementById('year').value][classLevel]) {
+                    renderCourses();
+                }
             } else {
-                vizeSection.style.display = 'block';
-                vizePuanInput.setAttribute('required', 'required');
-                targetGroup.style.display = 'block';
-                weightsSection.style.display = 'block';
                 updateWeightSum();
             }
+        }
 
-            if (targetType === 'passing') {
-                targetLabel.textContent = 'Geçiş notu';
-                container.innerHTML = `<input type="number" id="targetValue" value="${gecisNotu}" disabled>`;
-                gradeCourseGroup.style.display = 'none';
-            } else if (targetType === 'grade') {
+        function switchSingleTarget(target) {
+            activeSingleTarget = target;
+            clearBanner();
+            const targetLabel = document.getElementById('targetLabel');
+            const container = document.getElementById('targetInputContainer');
+            const targetGroup = document.getElementById('targetGroup');
+            const targetHint = document.getElementById('targetHint');
+
+            document.querySelectorAll('#singleTarget .seg-btn').forEach(btn => {
+                const isActive = btn.dataset.target === target;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-checked', isActive ? 'true' : 'false');
+            });
+
+            if (target === 'passing') {
+                targetGroup.style.display = 'none';
+                container.innerHTML = '';
+                targetHint.textContent = `Dersten geçmek için gereken minimum finali gösterir — hem geçiş notu (${gecisNotu}) hem şartlı geçiş (${sartliGecisNotu}) için.`;
+            } else if (target === 'grade') {
+                targetGroup.style.display = 'block';
                 targetLabel.textContent = 'Hedef harf notu';
                 container.innerHTML = `
                     <select id="targetValue" required>
@@ -1054,17 +1087,12 @@
                         <option value="DF">Şartlı başarılı (DF)</option>
                     </select>
                 `;
-                harfNotuDersleriniDoldur();
-            } else if (targetType === 'average') {
-                targetLabel.textContent = 'Hedef ders ortalaması';
+                targetHint.textContent = 'Seçtiğin harf notuna ulaşmak için gereken minimum finali hesaplar.';
+            } else if (target === 'average') {
+                targetGroup.style.display = 'block';
+                targetLabel.textContent = 'Hedef ortalama';
                 container.innerHTML = '<input type="number" id="targetValue" min="0" max="100" step="0.01" placeholder="0 — 100" required inputmode="decimal">';
-                harfNotuDersleriniDoldur();
-            } else if (targetType === 'semester') {
-                targetLabel.textContent = 'Dönem ortalaması';
-                container.innerHTML = '';
-                renderCourses();
-                coursesSection.classList.add('show');
-                gradeCourseGroup.style.display = 'none';
+                targetHint.textContent = 'Seçtiğin sayısal ortalamaya ulaşmak için gereken minimum finali hesaplar.';
             }
         }
 
@@ -1111,14 +1139,13 @@
                 }
 
                 const courseName = typeof ders.ad === 'string' ? ders.ad.trim() : '';
-                const courseAkts = Number(ders.akts);
                 const weights = {
                     vize: Number(ders.vize),
                     final: Number(ders.final),
                     quiz: Number(ders.quiz)
                 };
 
-                if (!courseName || !Number.isFinite(courseAkts) || !Number.isFinite(weights.vize) || !Number.isFinite(weights.final) || !Number.isFinite(weights.quiz)) {
+                if (!courseName || !Number.isFinite(weights.vize) || !Number.isFinite(weights.final) || !Number.isFinite(weights.quiz)) {
                     return;
                 }
 
@@ -1261,20 +1288,6 @@
             return 'F';
         }
 
-        function scoreToGPA(score) {
-            validateScore(score, 'Ders puanı');
-
-            if (score >= 91) return 4.00;
-            if (score >= 81) return 3.75;
-            if (score >= 71) return 3.50;
-            if (score >= 61) return 3.00;
-            if (score >= 51) return 2.50;
-            if (score >= 41) return 2.00;
-            if (score >= 36) return 1.50;
-            if (score >= 31) return 1.00;
-            return 0.00;
-        }
-
         function formatResult(title, value, isImpossible = false) {
             const className = isImpossible ? 'impossible' : 'success';
             if (isImpossible) {
@@ -1307,7 +1320,6 @@
             e.preventDefault();
             clearBanner();
 
-            const targetType = document.getElementById('targetType').value;
             const classLevel = document.getElementById('class').value;
             const year = document.getElementById('year').value;
 
@@ -1320,18 +1332,8 @@
                 let vize = null;
                 let quiz = null;
                 let weights = null;
-                let seciliDers = null;
 
-                if (targetType !== 'semester') {
-                    if (targetType === 'grade' || targetType === 'average') {
-                        seciliDers = getSeciliHarfNotuDersi();
-                        if (!seciliDers) {
-                            showBanner('Lütfen ders seçiniz.');
-                            return;
-                        }
-                        seciliHarfNotuDersiAgirliklariniUygula();
-                    }
-
+                if (activeMode !== 'semester') {
                     weights = getMainWeights();
 
                     vize = parseFloat(document.getElementById('vizePuan').value);
@@ -1347,19 +1349,20 @@
                         validateScore(quiz, "Quiz");
                     }
 
-                    const targetValue = document.getElementById('targetValue');
-                    if (!targetValue || !targetValue.value) {
-                        showBanner('Lütfen hedef değeri seçiniz.');
-                        return;
+                    if (activeSingleTarget !== 'passing') {
+                        const targetValue = document.getElementById('targetValue');
+                        if (!targetValue || !targetValue.value) {
+                            showBanner('Lütfen hedef değeri seçiniz.');
+                            return;
+                        }
                     }
                 }
 
                 let results = '';
 
-                if (targetType === 'semester') {
+                if (activeMode === 'semester') {
                     const courseInputs = document.querySelectorAll('.course-vize');
-                    let totalWeightedPoints = 0;
-                    let totalAkts = 0;
+                    let totalGPA = 0;
                     let courseCount = 0;
                     let detailsHtml = '';
 
@@ -1369,7 +1372,6 @@
                         const vizeWeightPct = parseFloat(document.querySelector(`.course-vize-weight[data-course-index="${courseIndex}"]`).value);
                         const finalWeightPct = parseFloat(document.querySelector(`.course-final-weight[data-course-index="${courseIndex}"]`).value);
                         const quizWeightPct = parseFloat(document.querySelector(`.course-quiz-weight[data-course-index="${courseIndex}"]`).value);
-                        const ders = mufredat[year]?.[classLevel]?.[currentSemester]?.dersler?.[Number(courseIndex)];
 
                         if (![vizeWeightPct, finalWeightPct, quizWeightPct].every(v => Number.isFinite(v) && v >= 0 && v <= 100)) {
                             throw new Error(`${dersAdi} için ağırlıklar 0 ile 100 arasında olmalıdır.`);
@@ -1401,23 +1403,16 @@
                         const quizWeight = quizWeightPct / 100;
                         const courseGrade = vizeVal * vizeWeight + finalVal * finalWeight + (quizVal !== null ? quizVal * quizWeight : 0);
                         const grade = findGrade(courseGrade);
-                        const gpa = scoreToGPA(courseGrade);
-                        const courseAkts = Number(ders?.akts ?? 0);
-                        if (!Number.isFinite(courseAkts) || courseAkts <= 0) {
-                            throw new Error(`${dersAdi} için geçerli AKTS bulunamadı.`);
-                        }
-                        const weightedPoints = gpa * courseAkts;
-                        totalWeightedPoints += weightedPoints;
-                        totalAkts += courseAkts;
+                        const gpa = gradeToGPA[grade];
+                        totalGPA += gpa;
                         courseCount++;
                         detailsHtml += `
                             <div class="course-detail">
-                                <span class="course-detail-name">${dersAdi} <span style="color: var(--muted); font-family: var(--font-mono); font-size: 11px;">· ${courseAkts} AKTS · ${vizeWeightPct}·${finalWeightPct}·${quizWeightPct}%</span></span>
+                                <span class="course-detail-name">${dersAdi} <span style="color: var(--muted); font-family: var(--font-mono); font-size: 11px;">· ${vizeWeightPct}·${finalWeightPct}·${quizWeightPct}%</span></span>
                                 <span class="course-detail-meta">
                                     <span class="course-detail-score">${courseGrade.toFixed(2)}</span>
                                     <span class="grade-badge grade-${grade}">${grade}</span>
                                     <span>${gpa.toFixed(2)}</span>
-                                    <span>${weightedPoints.toFixed(2)}</span>
                                 </span>
                             </div>`;
                     });
@@ -1427,12 +1422,7 @@
                         return;
                     }
 
-                    if (totalAkts <= 0) {
-                        alert('Geçerli AKTS toplamı bulunamadı.');
-                        return;
-                    }
-
-                    const semesterGPA = totalWeightedPoints / totalAkts;
+                    const semesterGPA = totalGPA / courseCount;
 
                     results += `
                         <div class="result-item">
@@ -1444,7 +1434,7 @@
                             </div>
                         </div>
                         <div class="result-item success">
-                            <div class="result-title">Dönem AGNO</div>
+                            <div class="result-title">Dönem GPA</div>
                             <div class="result-value">${semesterGPA.toFixed(2)} <span style="font-size: 14px; color: var(--muted); font-weight: 400;">/ 4.00</span></div>
                             <div class="result-note">Girilen ${courseCount} dersin 4'lük sistem ortalaması.</div>
                         </div>
@@ -1453,7 +1443,7 @@
                             ${detailsHtml}
                         </div>
                     `;
-                } else if (targetType === 'passing') {
+                } else if (activeSingleTarget === 'passing') {
                     const requiredGecis = calculateMinimumFinal(weights, vize, quiz, gecisNotu);
                     const gradeGecis = findGrade(gecisNotu);
                     const isImpossibleGecis = requiredGecis > 100;
@@ -1487,14 +1477,10 @@
                                 : `<div class="result-value">${Math.max(0, requiredSartli).toFixed(2)}</div>`}
                         </div>
                     `;
-                } else if (targetType === 'grade') {
+                } else if (activeSingleTarget === 'grade') {
                     const hedefHarf = document.getElementById('targetValue').value;
                     if (!hedefHarf) {
                         showBanner('Lütfen harf notu seçiniz.');
-                        return;
-                    }
-                    if (!seciliDers) {
-                        showBanner('Lütfen ders seçiniz.');
                         return;
                     }
                     const targetScore = harfNotlari[hedefHarf];
@@ -1507,9 +1493,6 @@
                             <div class="meta-line">
                                 <span><strong>Yıl</strong> ${year}</span>
                                 <span><strong>Sınıf</strong> ${classLevel}. sınıf</span>
-                                <span><strong>Ders</strong> ${seciliDers.ders.ad}</span>
-                                <span><strong>Dönem</strong> ${seciliDers.semesterName}</span>
-                                <span><strong>AKTS</strong> ${seciliDers.ders.akts}</span>
                                 <span><strong>Vize</strong> ${vize.toFixed(2)}</span>
                                 ${quiz !== null ? `<span><strong>Quiz</strong> ${quiz.toFixed(2)}</span>` : ''}
                                 <span><strong>Ağırlık</strong> ${weights.vizePct}·${weights.finalPct}·${weights.quizPct}%</span>
@@ -1521,13 +1504,9 @@
                         required,
                         isImpossible
                     );
-                } else if (targetType === 'average') {
+                } else if (activeSingleTarget === 'average') {
                     const targetAverage = parseFloat(document.getElementById('targetValue').value);
-                    validateScore(targetAverage, "Hedef ders ortalaması");
-                    if (!seciliDers) {
-                        showBanner('Lütfen ders seçiniz.');
-                        return;
-                    }
+                    validateScore(targetAverage, "Hedef ortalama");
                     const required = calculateMinimumFinal(weights, vize, quiz, targetAverage);
                     const isImpossible = required > 100;
 
@@ -1537,9 +1516,6 @@
                             <div class="meta-line">
                                 <span><strong>Yıl</strong> ${year}</span>
                                 <span><strong>Sınıf</strong> ${classLevel}. sınıf</span>
-                                <span><strong>Ders</strong> ${seciliDers.ders.ad}</span>
-                                <span><strong>Dönem</strong> ${seciliDers.semesterName}</span>
-                                <span><strong>AKTS</strong> ${seciliDers.ders.akts}</span>
                                 <span><strong>Vize</strong> ${vize.toFixed(2)}</span>
                                 ${quiz !== null ? `<span><strong>Quiz</strong> ${quiz.toFixed(2)}</span>` : ''}
                                 <span><strong>Ağırlık</strong> ${weights.vizePct}·${weights.finalPct}·${weights.quizPct}%</span>
@@ -1547,7 +1523,7 @@
                         </div>
                     `;
                     results += formatResult(
-                        `${targetAverage.toFixed(2)} ders ortalaması için gereken minimum final`,
+                        `${targetAverage.toFixed(2)} ortalama için gereken minimum final`,
                         required,
                         isImpossible
                     );
@@ -1574,32 +1550,25 @@
                     document.getElementById('finalWeight').value = 60;
                     document.getElementById('quizWeight').value = 0;
                 }
-                updateTargetInput();
+                switchMode('single');
+                switchSingleTarget('passing');
+                updateWeightSum();
             }, 0);
         });
 
         document.getElementById('class').addEventListener('change', function () {
-            const targetType = document.getElementById('targetType').value;
-            if (targetType === 'semester') {
+            setClassWeights(this.value);
+            if (activeMode === 'semester') {
                 renderCourses();
-            } else if (targetType === 'grade' || targetType === 'average') {
-                harfNotuDersleriniDoldur();
-            } else {
-                setClassWeights(this.value);
             }
         });
 
-        document.getElementById('year').addEventListener('change', function () {
-            const targetType = document.getElementById('targetType').value;
-            if (targetType === 'semester') {
-                renderCourses();
-            } else if (targetType === 'grade' || targetType === 'average') {
-                harfNotuDersleriniDoldur();
-            }
+        document.querySelectorAll('.mode-tab').forEach(btn => {
+            btn.addEventListener('click', () => switchMode(btn.dataset.mode));
         });
 
-        document.getElementById('gradeCourseValue').addEventListener('change', function () {
-            seciliHarfNotuDersiAgirliklariniUygula();
+        document.querySelectorAll('#singleTarget .seg-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchSingleTarget(btn.dataset.target));
         });
 
         ['vizeWeight', 'finalWeight', 'quizWeight'].forEach(id => {
@@ -1607,7 +1576,7 @@
         });
 
         updateWeightSum();
-        updateTargetInput();
+        switchSingleTarget('passing');
     </script>
 </body>
 
