@@ -130,6 +130,57 @@ def harf_notu_bul(puan: float) -> str:
     return "FF"
 
 
+def puani_katsayiya_cevir(puan: float) -> float:
+    """100'lük puanı 4'lük sistem katsayısına çevir."""
+    _validate_score(puan, "Puan")
+
+    if puan >= 91:
+        return 4.00
+    if puan >= 81:
+        return 3.75
+    if puan >= 71:
+        return 3.50
+    if puan >= 61:
+        return 3.00
+    if puan >= 51:
+        return 2.50
+    if puan >= 41:
+        return 2.00
+    if puan >= 36:
+        return 1.50
+    if puan >= 31:
+        return 1.00
+    return 0.00
+
+
+def agno_hesapla(ders_verileri: list[tuple[float, float]]) -> float:
+    """
+    AGNO hesapla.
+
+    Args:
+        ders_verileri: Her ders için (100'lük puan, AKTS) çiftleri
+
+    Returns:
+        4'lük sistemde AGNO
+    """
+    if not ders_verileri:
+        raise ValueError("AGNO hesaplamak için en az bir ders girilmelidir.")
+
+    toplam_akts = 0.0
+    toplam_agirlikli_puan = 0.0
+
+    for puan, akts in ders_verileri:
+        _validate_score(puan, "Ders puanı")
+        if akts <= 0:
+            raise ValueError(f"AKTS değeri 0'dan büyük olmalıdır: {akts}")
+
+        katsayi = puani_katsayiya_cevir(puan)
+        toplam_akts += akts
+        toplam_agirlikli_puan += katsayi * akts
+
+    return toplam_agirlikli_puan / toplam_akts
+
+
 def minimum_final_harf_icin(
     ders: Ders,
     vize: float,
@@ -220,7 +271,7 @@ def donem_ortalama(donem: DonemDersleri, notlar: dict[str, DersNotu]) -> float:
 
 if __name__ == "__main__":
     # Örnek senaryo
-    ders = Ders(ad="Örnek Ders", vize=0.4, final=0.6, quiz=0)
+    ders = Ders(ad="Örnek Ders", vize=0.4, final=0.6, quiz=0, akts=0)
     vize_puani = 20
 
     print("=" * 60)
@@ -265,6 +316,17 @@ if __name__ == "__main__":
     else:
         print("   Hedef Ortalama: 70+")
         print("   Gerekli Minimum Final: {min_final_70:.2f}")
+    print()
+
+    print("4. AGNO HESAPLAMA ÖRNEĞİ")
+    print("-" * 60)
+    ornek_dersler = [(85, 6), (55, 4)]
+    ornek_agno = agno_hesapla(ornek_dersler)
+    print("   Ders 1: 85 puan, 6 AKTS -> BA -> 3.75 x 6 = 22.50")
+    print("   Ders 2: 55 puan, 4 AKTS -> CC -> 2.50 x 4 = 10.00")
+    print("   Toplam Ağırlıklı Puan: 32.50")
+    print("   Toplam AKTS: 10")
+    print(f"   Sonuç AGNO: {ornek_agno:.2f}")
     print()
 
     print("=" * 60)

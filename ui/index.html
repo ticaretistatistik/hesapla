@@ -4,134 +4,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Final Notu Hesap Makinesi | Ticaret İstatistik</title>
+    <meta name="description"
+        content="İstanbul Ticaret Üniversitesi İstatistik Bölümü için final notu ve dönem ortalaması hesaplama aracı.">
+    <meta name="theme-color" content="#fafaf7">
+    <title>Final Notu Hesap Makinesi — İTİCÜ İstatistik</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --bg: #fafaf7;
+            --surface: #ffffff;
+            --surface-2: #f4f4f0;
+            --ink: #0a0a0a;
+            --ink-2: #2a2a28;
+            --muted: #6b6b66;
+            --line: #e6e6e1;
+            --line-strong: #c9c9c2;
+            --accent: #f5c518;
+            --accent-soft: #ffe391;
+            --accent-ink: #0a0a0a;
+            --ok: #1f4a1b;
+            --bad: #8a2a1a;
+            --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+            --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
-            min-height: 100vh;
+            font-family: var(--font-sans);
+            background: var(--bg);
+            background-image:
+                radial-gradient(1100px 560px at 8% -6%, rgba(245, 197, 24, 0.12), transparent 55%),
+                radial-gradient(900px 500px at 108% 108%, rgba(10, 10, 10, 0.04), transparent 55%);
+            color: var(--ink);
+            min-height: 100dvh;
+            padding: 48px 24px 80px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            font-feature-settings: "cv11", "ss01", "ss03";
+        }
+
+        .shell {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        a.skip-link {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            padding: 10px 14px;
+            background: var(--ink);
+            color: var(--surface);
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        a.skip-link:focus {
+            left: 16px;
+            top: 16px;
+            z-index: 10;
+        }
+
+        .masthead {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            align-items: baseline;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 18px;
+            margin-bottom: 40px;
         }
 
-        .container {
-            background: white;
-            border-radius: 0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
-            border-top: 4px solid #FFC107;
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
         }
 
-        h1 {
-            color: #1a1a1a;
-            margin-bottom: 5px;
-            font-size: 28px;
+        .eyebrow strong {
+            color: var(--ink-2);
+            font-weight: 500;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            padding: 44px 40px 36px;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(10, 10, 10, 0.03), 0 12px 32px -16px rgba(10, 10, 10, 0.10);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            width: 64px;
+            height: 4px;
+            background: var(--accent);
+        }
+
+        .title {
+            font-size: clamp(30px, 4.4vw, 42px);
+            line-height: 1.04;
+            letter-spacing: -0.032em;
             font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 10px;
+            text-wrap: balance;
         }
 
         .subtitle {
-            color: #666;
-            margin-bottom: 30px;
+            font-size: 14px;
+            color: var(--muted);
+            max-width: 56ch;
+            line-height: 1.55;
+            margin-bottom: 32px;
+            text-wrap: pretty;
+        }
+
+        .info-box {
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            border-left: 3px solid var(--accent);
+            padding: 14px 16px;
             font-size: 13px;
+            color: var(--ink-2);
+            line-height: 1.55;
+            margin-bottom: 32px;
+        }
+
+        .form-banner {
+            display: none;
+            margin-bottom: 20px;
+            padding: 12px 14px;
+            background: #faf1ee;
+            border: 1px solid #e9cdc1;
+            border-left: 3px solid var(--bad);
+            color: var(--bad);
+            font-size: 13px;
+            font-family: var(--font-mono);
+        }
+
+        .form-banner.show {
+            display: block;
+            animation: rise 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
         }
 
         .form-group {
             margin-bottom: 20px;
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        select,
-        input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 0;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        select:focus,
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #FFC107;
-            box-shadow: inset 0 0 0 1px #FFC107;
-        }
-
         .row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 18px;
         }
 
-        .button-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 25px;
+        label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            color: var(--ink);
+            font-family: var(--font-sans);
+            font-size: 15px;
+            font-variant-numeric: tabular-nums;
+            transition: border-color 140ms ease, box-shadow 140ms ease;
+        }
+
+        input[type="number"]:hover,
+        select:hover {
+            border-color: var(--line-strong);
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--ink);
+            box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.35);
+        }
+
+        input[disabled] {
+            color: var(--muted);
+            background: var(--surface-2);
+            cursor: not-allowed;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='none' stroke='%236b685f' stroke-width='1.5' d='M1 1l4 4 4-4'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 32px;
+            align-items: center;
         }
 
         button {
-            padding: 12px 24px;
-            border: none;
+            font-family: var(--font-sans);
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
+            letter-spacing: -0.005em;
             cursor: pointer;
-            transition: all 0.3s;
+            border: 1px solid transparent;
+            padding: 12px 22px;
+            transition: background 140ms ease, color 140ms ease, border-color 140ms ease, transform 80ms ease;
         }
 
-        .btn-calculate {
-            background: #FFC107;
-            color: #1a1a1a;
+        .btn-primary {
+            background: var(--ink);
+            color: var(--surface);
         }
 
-        .btn-calculate:hover {
-            background: #FFB300;
+        .btn-primary:hover {
+            background: #2b261c;
         }
 
-        .btn-reset {
-            background: #f0f0f0;
-            color: #333;
+        .btn-primary:active {
+            transform: translateY(1px);
         }
 
-        .btn-reset:hover {
-            background: #e0e0e0;
+        .btn-secondary {
+            background: transparent;
+            color: var(--ink-2);
+            border-color: var(--line);
+        }
+
+        .btn-secondary:hover {
+            color: var(--ink);
+            border-color: var(--ink);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(1px);
+        }
+
+        button:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
         }
 
         .results {
             display: none;
-            margin-top: 35px;
-            padding: 25px;
-            background: #fafafa;
-            border-radius: 0;
-            border-left: 4px solid #FFC107;
+            margin-top: 44px;
+            padding-top: 32px;
+            border-top: 1px solid var(--line);
         }
 
         .results.show {
             display: block;
-            animation: slideIn 0.3s ease;
+            animation: rise 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
         }
 
-        @keyframes slideIn {
+        @keyframes rise {
             from {
                 opacity: 0;
-                transform: translateY(-10px);
+                transform: translateY(6px);
             }
 
             to {
@@ -140,67 +302,127 @@
             }
         }
 
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 18px;
+        }
+
         .result-item {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: white;
-            border-left: 3px solid #FFC107;
+            padding: 18px 20px;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            border-left: 3px solid var(--accent);
+            margin-bottom: 12px;
         }
 
         .result-item.impossible {
-            border-left-color: #d32f2f;
-            background: #fff3e0;
+            border-left-color: var(--bad);
+            background: #faf1ee;
         }
 
         .result-item.success {
-            border-left-color: #388e3c;
-            background: #e8f5e9;
+            border-left-color: var(--accent);
+            background: #fffaea;
         }
 
         .result-title {
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink-2);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            line-height: 1.4;
         }
 
         .result-value {
-            font-size: 20px;
-            font-weight: bold;
-            color: #FFC107;
+            font-family: var(--font-mono);
+            font-size: 30px;
+            font-weight: 500;
+            letter-spacing: -0.025em;
+            font-variant-numeric: tabular-nums;
+            color: var(--ink);
+            line-height: 1.1;
         }
 
         .result-item.impossible .result-value {
-            color: #d32f2f;
+            color: var(--bad);
         }
 
         .result-item.success .result-value {
-            color: #388e3c;
+            color: var(--ink);
         }
 
         .result-note {
             font-size: 12px;
-            color: #666;
+            color: var(--muted);
             margin-top: 8px;
-            line-height: 1.4;
+            line-height: 1.55;
+            max-width: 60ch;
         }
 
-        .info-box {
-            background: #e3f2fd;
-            border-left: 4px solid #1976d2;
-            padding: 15px;
-            border-radius: 0;
-            margin-bottom: 25px;
+        .meta-line {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .meta-line strong {
+            color: var(--ink-2);
+            font-weight: 500;
+        }
+
+        .course-detail {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--line);
             font-size: 13px;
-            color: #1565c0;
-            line-height: 1.5;
+            gap: 12px;
+        }
+
+        .course-detail:last-child {
+            border-bottom: none;
+        }
+
+        .course-detail-name {
+            color: var(--ink-2);
+            flex: 1;
+            min-width: 0;
+        }
+
+        .course-detail-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-variant-numeric: tabular-nums;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .course-detail-score {
+            color: var(--ink);
         }
 
         .error {
-            color: #e74c3c;
+            color: var(--bad);
             font-size: 12px;
-            margin-top: 5px;
+            margin-top: 6px;
             display: none;
+            font-family: var(--font-mono);
         }
 
         .error.show {
@@ -209,82 +431,89 @@
 
         .grade-badge {
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 12px;
-            margin-left: 10px;
+            padding: 2px 8px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            line-height: 1.5;
         }
 
-        .grade-AA {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .grade-BA {
-            background: #8BC34A;
-            color: white;
-        }
-
-        .grade-BB {
-            background: #CDDC39;
-            color: #333;
-        }
-
-        .grade-CB {
-            background: #FFC107;
-            color: #333;
-        }
-
-        .grade-CC {
-            background: #FF9800;
-            color: white;
-        }
-
-        .grade-CD {
-            background: #FF5722;
-            color: white;
-        }
-
-        .grade-DD {
-            background: #F44336;
-            color: white;
-        }
-
-        .grade-DF {
-            background: #9C27B0;
-            color: white;
-        }
-
-        .grade-F {
-            background: #333;
-            color: white;
-        }
+        .grade-AA { background: #0a0a0a; color: var(--accent); }
+        .grade-BA { background: #1a1a1a; color: #ffffff; }
+        .grade-BB { background: #2e2e2c; color: #ffffff; }
+        .grade-CB { background: var(--accent); color: #0a0a0a; }
+        .grade-CC { background: var(--accent-soft); color: #0a0a0a; }
+        .grade-CD { background: #ffffff; color: #0a0a0a; border: 1px solid #0a0a0a; }
+        .grade-DD { background: var(--surface-2); color: #2a2a28; border: 1px solid var(--line-strong); }
+        .grade-DF { background: var(--surface-2); color: #6b6b66; border: 1px dashed var(--line-strong); }
+        .grade-F  { background: #2a2a28; color: var(--accent); }
 
         .courses-section {
             display: none;
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 2px solid #e0e0e0;
         }
 
         .courses-section.show {
             display: block;
         }
 
+        #semesterHint {
+            margin-top: 14px;
+        }
+
+        .courses-title {
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: -0.015em;
+            margin-bottom: 18px;
+            color: var(--ink);
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 22px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+            cursor: pointer;
+            transition: color 140ms ease, border-color 140ms ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--ink-2);
+        }
+
+        .tab-btn.active {
+            color: var(--ink);
+            border-bottom-color: var(--accent);
+        }
+
         .course-item {
-            background: #fafafa;
-            padding: 15px;
-            border-radius: 0;
-            margin-bottom: 15px;
-            border-left: 3px solid #FFC107;
+            background: var(--surface-2);
+            border: 1px solid var(--line);
+            padding: 18px 18px 16px;
+            margin-bottom: 12px;
         }
 
         .course-name {
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 12px;
+            font-weight: 500;
+            color: var(--ink);
+            margin-bottom: 14px;
             font-size: 14px;
+            letter-spacing: -0.005em;
         }
 
         .course-inputs {
@@ -299,178 +528,457 @@
         }
 
         .course-input-group label {
-            font-size: 12px;
+            font-size: 10px;
             margin-bottom: 6px;
-            color: #555;
-            font-weight: 500;
+            letter-spacing: 0.1em;
         }
 
         .course-input-group input {
-            padding: 8px;
-            font-size: 12px;
-            border: 1px solid #ddd;
+            padding: 8px 10px;
+            font-size: 13px;
         }
 
-        .semester-title {
-            font-weight: 600;
-            margin-top: 20px;
-            margin-bottom: 15px;
-            font-size: 14px;
+        .course-subsection-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 16px 0 8px;
         }
 
-        .semester-title:first-child {
+        .course-subsection-label:first-of-type {
             margin-top: 0;
         }
 
-        .tab-buttons {
+        .course-weight-hint {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            margin-top: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .course-weight-hint.invalid {
+            color: var(--bad);
+        }
+
+        .weights-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 10px;
-            margin-bottom: 20px;
         }
 
-        .tab-btn {
-            padding: 10px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 0;
-            cursor: pointer;
-            font-weight: 600;
+        .weight-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .weight-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .weight-input-wrap {
+            position: relative;
+        }
+
+        .weight-input-wrap input {
+            padding-right: 30px;
+        }
+
+        .weight-suffix {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: var(--font-mono);
             font-size: 13px;
-            transition: all 0.3s;
-            color: #666;
+            color: var(--muted);
+            pointer-events: none;
         }
 
-        .tab-btn.active {
-            background: #FFC107;
-            color: #1a1a1a;
-            border-color: #FFC107;
+        .weight-hint {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: baseline;
+            flex-wrap: wrap;
         }
 
-        .tab-btn:hover {
-            border-color: #FFC107;
+        .weight-hint #weightSum {
+            font-weight: 500;
+            color: var(--ink-2);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .weight-hint.invalid,
+        .weight-hint.invalid #weightSum {
+            color: var(--bad);
+        }
+
+        .mode-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--line);
+            margin: 8px 0 28px;
+        }
+
+        .mode-tab {
+            flex: 1;
+            padding: 14px 4px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: -0.005em;
+            color: var(--muted);
+            cursor: pointer;
+            transition: color 140ms ease, border-color 140ms ease;
+        }
+
+        .mode-tab:hover {
+            color: var(--ink-2);
+        }
+
+        .mode-tab.active {
+            color: var(--ink);
+            border-bottom-color: var(--accent);
+        }
+
+        .mode-tab:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: rise 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+        }
+
+        .segmented {
+            display: flex;
+            gap: 0;
+            border: 1px solid var(--line-strong);
+            background: var(--surface);
+        }
+
+        .seg-btn {
+            flex: 1;
+            padding: 12px 8px;
+            background: transparent;
+            border: none;
+            border-right: 1px solid var(--line);
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: -0.005em;
+            color: var(--ink-2);
+            cursor: pointer;
+            transition: background 140ms ease, color 140ms ease;
+        }
+
+        .seg-btn:last-child {
+            border-right: none;
+        }
+
+        .seg-btn:hover {
+            background: var(--surface-2);
+        }
+
+        .seg-btn.active {
+            background: var(--accent);
+            color: var(--accent-ink);
+        }
+
+        .seg-btn.active:hover {
+            background: var(--accent);
+        }
+
+        .seg-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .target-hint {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+            margin-top: 10px;
+            line-height: 1.5;
         }
 
         footer {
-            margin-top: 50px;
-            padding-top: 30px;
-            padding-bottom: 20px;
-            border-top: 1px solid #e0e0e0;
-            text-align: center;
-            font-size: 13px;
-            color: #666;
+            margin-top: 56px;
+            padding-top: 24px;
+            border-top: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            font-size: 12px;
+            color: var(--muted);
+            font-family: var(--font-mono);
         }
 
         footer a {
-            color: #FFC107;
+            color: var(--ink-2);
             text-decoration: none;
-            transition: color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 140ms ease;
         }
 
         footer a:hover {
-            color: #FFB300;
+            color: var(--accent);
+        }
+
+        footer .colophon {
+            text-align: right;
+            line-height: 1.6;
+            font-size: 11px;
+        }
+
+        @media (max-width: 560px) {
+            body {
+                padding: 28px 16px 64px;
+            }
+
+            .card {
+                padding: 32px 20px 28px;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .course-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+
+            .seg-btn {
+                padding: 11px 6px;
+                font-size: 13px;
+            }
+
+            .mode-tab {
+                padding: 12px 4px;
+                font-size: 13px;
+            }
+
+            footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+
+            footer .colophon {
+                text-align: left;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Final Notu Hesap Makinesi</h1>
-        <p class="subtitle">İstatistik Bölümü - İstanbul Ticaret Üniversitesi</p>
+    <a href="#calculatorForm" class="skip-link">İçeriğe geç</a>
+    <div class="shell">
+        <header class="masthead">
+            <span class="eyebrow"><strong>İTİCÜ</strong> · İstatistik</span>
+            <span class="eyebrow">2025 — 2026</span>
+        </header>
 
-        <div class="info-box">
-            Vize puanınız ve hedeflerinize göre ihtiyacınız olan minimum final puanını hesaplayın.
-        </div>
+        <main class="card">
+            <h1 class="title">Final notu hesap makinesi.</h1>
+            <p class="subtitle">
+                Vize puanınıza ve hedefinize göre ihtiyacınız olan minimum final notunu, alacağınız harf notunu ve
+                dönem GPA'sını hesaplar.
+            </p>
 
-        <form id="calculatorForm">
-            <div class="row">
-                <div class="form-group">
-                    <label for="year">Akademik Yıl</label>
-                    <select id="year" required>
-                        <option value="2025-2026">2025-2026</option>
-                    </select>
+            <div class="info-box">
+                Hesaplayıcı müfredatta tanımlı ağırlıkları kullanır. Sonuçlar planlama amaçlıdır; kesinleşmiş not
+                değildir.
+            </div>
+
+            <div class="form-banner" id="formBanner" role="alert"></div>
+
+            <form id="calculatorForm" novalidate>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="year">Akademik yıl</label>
+                        <select id="year" required>
+                            <option value="2025-2026">2025 — 2026</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="class">Sınıf</label>
+                        <select id="class" required>
+                            <option value="">Seçiniz</option>
+                            <option value="1">1. sınıf</option>
+                            <option value="2">2. sınıf</option>
+                            <option value="3">3. sınıf</option>
+                            <option value="4">4. sınıf</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="class">Sınıf</label>
-                    <select id="class" required>
-                        <option value="">Seçiniz</option>
-                        <option value="1">1. Sınıf</option>
-                        <option value="2">2. Sınıf</option>
-                        <option value="3">3. Sınıf</option>
-                        <option value="4">4. Sınıf</option>
-                    </select>
+
+                <div class="mode-tabs" role="tablist" aria-label="Hesaplama modu">
+                    <button type="button" class="mode-tab active" data-mode="single" role="tab"
+                        aria-selected="true" aria-controls="panel-single" id="tab-single">Tek Ders Finali</button>
+                    <button type="button" class="mode-tab" data-mode="semester" role="tab"
+                        aria-selected="false" aria-controls="panel-semester" id="tab-semester">Dönem Ortalaması</button>
                 </div>
-            </div>
 
-            <div class="form-group" id="vizePuanSection">
-                <label for="vizePuan">Vize Puanı</label>
-                <input type="number" id="vizePuan" min="0" max="100" step="0.01" placeholder="0-100" required>
-                <div class="error" id="vizeError"></div>
-            </div>
+                <div class="tab-panel active" id="panel-single" role="tabpanel" aria-labelledby="tab-single">
+                    <div class="form-group" id="weightsSection">
+                        <label>Ağırlıklar</label>
+                        <div class="weights-row">
+                            <div class="weight-field">
+                                <span class="weight-label">Vize</span>
+                                <div class="weight-input-wrap">
+                                    <input type="number" id="vizeWeight" min="0" max="100" step="1" inputmode="numeric"
+                                        value="40" aria-label="Vize ağırlığı (%)">
+                                    <span class="weight-suffix">%</span>
+                                </div>
+                            </div>
+                            <div class="weight-field">
+                                <span class="weight-label">Final</span>
+                                <div class="weight-input-wrap">
+                                    <input type="number" id="finalWeight" min="0" max="100" step="1" inputmode="numeric"
+                                        value="60" aria-label="Final ağırlığı (%)">
+                                    <span class="weight-suffix">%</span>
+                                </div>
+                            </div>
+                            <div class="weight-field">
+                                <span class="weight-label">Quiz</span>
+                                <div class="weight-input-wrap">
+                                    <input type="number" id="quizWeight" min="0" max="100" step="1" inputmode="numeric"
+                                        value="0" aria-label="Quiz ağırlığı (%)">
+                                    <span class="weight-suffix">%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="weight-hint" id="weightHint">
+                            <span>Sınıf seçildiğinde müfredattan doldurulur · istediğin gibi değiştirebilirsin.</span>
+                            <span id="weightSum">Toplam 100%</span>
+                        </div>
+                    </div>
 
-            <div class="form-group">
-                <label for="targetType">Hedef Türü</label>
-                <select id="targetType" required onchange="updateTargetInput()">
-                    <option value="passing">Ders Geçiş Notu</option>
-                    <option value="grade">Ders Harf Notu</option>
-                    <option value="average">Ders Ortalaması</option>
-                    <option value="semester">Dönem Ortalaması</option>
-                </select>
-            </div>
+                    <div class="form-group" id="vizePuanSection">
+                        <label for="vizePuan">Vize puanı</label>
+                        <input type="number" id="vizePuan" min="0" max="100" step="0.01" placeholder="0 — 100" required
+                            inputmode="decimal">
+                        <div class="error" id="vizeError"></div>
+                    </div>
 
-            <div class="form-group">
-                <label for="targetValue" id="targetLabel">Hedef Harf Notu</label>
-                <div id="targetInputContainer">
-                    <select id="targetValue" required>
-                        <option value="">Seçiniz</option>
-                        <option value="AA">AA</option>
-                        <option value="BA">BA</option>
-                        <option value="BB">BB</option>
-                        <option value="CB">CB</option>
-                        <option value="CC">CC</option>
-                        <option value="CD">Geçer Şartlı Başarılı(CD)</option>
-                        <option value="DD">Şartlı Başarılı(DD)</option>
-                        <option value="DF">Şartlı Başarılı(DF)</option>
-                    </select>
+                    <div class="form-group" id="quizPuanSection" style="display: none;">
+                        <label for="quizPuan">Quiz puanı</label>
+                        <input type="number" id="quizPuan" min="0" max="100" step="0.01" placeholder="0 — 100"
+                            inputmode="decimal">
+                        <div class="error" id="quizError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hedefim</label>
+                        <div class="segmented" role="radiogroup" id="singleTarget" aria-label="Hedef türü">
+                            <button type="button" class="seg-btn active" data-target="passing" role="radio"
+                                aria-checked="true">Geçmek</button>
+                            <button type="button" class="seg-btn" data-target="grade" role="radio"
+                                aria-checked="false">Harf notu</button>
+                            <button type="button" class="seg-btn" data-target="average" role="radio"
+                                aria-checked="false">Ortalama</button>
+                        </div>
+                        <div class="target-hint" id="targetHint">Dersten geçmek için gereken minimum finali (ve şartlı geçiş eşiğini) gösterir.</div>
+                    </div>
+
+                    <div class="form-group" id="targetGroup" style="display: none;">
+                        <label for="targetValue" id="targetLabel">Hedef harf notu</label>
+                        <div id="targetInputContainer"></div>
+                        <div class="error" id="targetError"></div>
+                    </div>
                 </div>
-                <div class="error" id="targetError"></div>
-            </div>
 
-            <div id="coursesSection" class="courses-section">
-                <h3 style="margin-bottom: 15px; color: #1a1a1a; font-size: 16px;">Ders Notlarınız</h3>
-                <div class="tab-buttons" id="semesterTabs"></div>
-                <div id="coursesContent"></div>
-            </div>
+                <div class="tab-panel" id="panel-semester" role="tabpanel" aria-labelledby="tab-semester">
+                    <section id="coursesSection" class="courses-section show" aria-labelledby="coursesTitle">
+                        <h2 id="coursesTitle" class="courses-title">Ders notlarınız</h2>
+                        <div class="tab-buttons" id="semesterTabs" role="tablist"></div>
+                        <div id="coursesContent"></div>
+                        <p class="target-hint" id="semesterHint">Girdiğin derslerin vize/final/quiz notlarından dönem GPA'nı hesaplar. Sınıf seçtikten sonra dersler otomatik listelenir.</p>
+                    </section>
+                </div>
 
-            <div class="button-group">
-                <button type="submit" class="btn-calculate">Hesapla</button>
-                <button type="reset" class="btn-reset">Temizle</button>
-            </div>
-        </form>
+                <div class="button-row">
+                    <button type="submit" class="btn-primary">Hesapla</button>
+                    <button type="reset" class="btn-secondary">Temizle</button>
+                </div>
+            </form>
 
-        <div class="results" id="results">
-            <div id="resultsContent"></div>
-        </div>
+            <section class="results" id="results" aria-live="polite">
+                <div class="section-label">Sonuçlar</div>
+                <div id="resultsContent"></div>
+            </section>
+        </main>
 
         <footer>
-            <div style="margin-bottom: 15px;">
-                <a href="https://github.com/ticaretistatistik/"
-                    style="display: inline-flex; align-items: center; gap: 10px;">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                        <path
-                            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
-                        </path>
-                    </svg>
-                </a>
-            </div>
-            <div style="font-size: 12px; color: #999; margin-top: 10px; line-height: 1.5;">
-                <p>İstanbul Ticaret Üniversitesi<br>İstatistik Bölümü Öğrencileri Tarafından Geliştirilmiştir</p>
+            <a href="https://github.com/ticaretistatistik/" rel="noopener" aria-label="GitHub: ticaretistatistik">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path
+                        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z">
+                    </path>
+                </svg>
+                <span>ticaretistatistik</span>
+            </a>
+            <div class="colophon">
+                İstanbul Ticaret Üniversitesi<br>
+                İstatistik Bölümü öğrencileri tarafından geliştirildi.
             </div>
         </footer>
     </div>
 
     <script>
-        // Global değişkenler
         let harfNotlari = {};
         let gradeToGPA = {};
         let dersBilgileri = {};
@@ -479,54 +987,93 @@
         let gecisNotu = 41;
         let sartliGecisNotu = 31;
 
-        // Config ve Mufredat'ı yükle
         Promise.all([
             fetch('config.json').then(r => r.json()),
             fetch('mufredat.json').then(r => r.json())
         ])
-        .then(([config, muf]) => {
-            CONFIG = config;
-            harfNotlari = CONFIG.harfNotlari;
-            gradeToGPA = CONFIG.gradeToGPA;
-            dersBilgileri = CONFIG.dersBilgileri;
-            gecisNotu = Number(CONFIG.gecisNotu ?? 41);
-            sartliGecisNotu = Number(CONFIG.sartliGecisNotu ?? 31);
-            mufredat = muf;
-        })
-        .catch(e => {
-            console.error('Hata: Config dosyaları yüklenemedi', e);
-            alert('Sistem başlatılamadı. Lütfen sayfayı yenileyin.');
-        });
+            .then(([config, muf]) => {
+                CONFIG = config;
+                harfNotlari = CONFIG.harfNotlari;
+                gradeToGPA = CONFIG.gradeToGPA;
+                dersBilgileri = CONFIG.dersBilgileri;
+                gecisNotu = Number(CONFIG.gecisNotu ?? 41);
+                sartliGecisNotu = Number(CONFIG.sartliGecisNotu ?? 31);
+                mufredat = muf;
+                const currentClass = document.getElementById('class').value;
+                if (currentClass) setClassWeights(currentClass);
+                else updateWeightSum();
+            })
+            .catch(e => {
+                console.error('Config dosyaları yüklenemedi', e);
+                showBanner('Sistem başlatılamadı. Lütfen sayfayı yenileyin.');
+            });
 
         let currentSemester = 0;
+        let activeMode = 'single';             // 'single' | 'semester'
+        let activeSingleTarget = 'passing';    // 'passing' | 'grade' | 'average'
 
-        // Varsayılan yılı ayarla (2026)
         document.getElementById('year').value = '2025-2026';
 
-        function updateTargetInput() {
-            const targetType = document.getElementById('targetType').value;
+        function showBanner(message) {
+            const banner = document.getElementById('formBanner');
+            banner.textContent = message;
+            banner.classList.add('show');
+            banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function clearBanner() {
+            const banner = document.getElementById('formBanner');
+            banner.classList.remove('show');
+            banner.textContent = '';
+        }
+
+        function switchMode(mode) {
+            activeMode = mode;
+            clearBanner();
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('resultsContent').innerHTML = '';
+
+            document.querySelectorAll('.mode-tab').forEach(btn => {
+                const isActive = btn.dataset.mode === mode;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.toggle('active', panel.id === `panel-${mode}`);
+            });
+
+            if (mode === 'semester') {
+                const classLevel = document.getElementById('class').value;
+                if (classLevel && mufredat[document.getElementById('year').value]
+                    && mufredat[document.getElementById('year').value][classLevel]) {
+                    renderCourses();
+                }
+            } else {
+                updateWeightSum();
+            }
+        }
+
+        function switchSingleTarget(target) {
+            activeSingleTarget = target;
+            clearBanner();
             const targetLabel = document.getElementById('targetLabel');
             const container = document.getElementById('targetInputContainer');
-            const coursesSection = document.getElementById('coursesSection');
-            const vizeSection = document.getElementById('vizePuanSection');
-            const vizePuanInput = document.getElementById('vizePuan');
+            const targetGroup = document.getElementById('targetGroup');
+            const targetHint = document.getElementById('targetHint');
 
-            coursesSection.classList.remove('show');
+            document.querySelectorAll('#singleTarget .seg-btn').forEach(btn => {
+                const isActive = btn.dataset.target === target;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-checked', isActive ? 'true' : 'false');
+            });
 
-            // Dönem ortalaması seçilmişse vize puanı alanını gizle ve required'ı kaldır
-            if (targetType === 'semester') {
-                vizeSection.style.display = 'none';
-                vizePuanInput.removeAttribute('required');
-            } else {
-                vizeSection.style.display = 'block';
-                vizePuanInput.setAttribute('required', 'required');
-            }
-
-            if (targetType === 'passing') {
-                targetLabel.textContent = 'Geçiş Notu';
-                container.innerHTML = `<input type="number" id="targetValue" value="${gecisNotu}" disabled>`;
-            } else if (targetType === 'grade') {
-                targetLabel.textContent = 'Hedef Harf Notu';
+            if (target === 'passing') {
+                targetGroup.style.display = 'none';
+                container.innerHTML = '';
+                targetHint.textContent = `Dersten geçmek için gereken minimum finali gösterir — hem geçiş notu (${gecisNotu}) hem şartlı geçiş (${sartliGecisNotu}) için.`;
+            } else if (target === 'grade') {
+                targetGroup.style.display = 'block';
+                targetLabel.textContent = 'Hedef harf notu';
                 container.innerHTML = `
                     <select id="targetValue" required>
                         <option value="">Seçiniz</option>
@@ -535,19 +1082,17 @@
                         <option value="BB">BB</option>
                         <option value="CB">CB</option>
                         <option value="CC">CC</option>
-                        <option value="CD">Geçer Şartlı Başarılı</option>
-                        <option value="DD">Şartlı Başarılı</option>
-                        <option value="DF">Şartlı Başarılı</option>
+                        <option value="CD">Geçer şartlı başarılı (CD)</option>
+                        <option value="DD">Şartlı başarılı (DD)</option>
+                        <option value="DF">Şartlı başarılı (DF)</option>
                     </select>
                 `;
-            } else if (targetType === 'average') {
-                targetLabel.textContent = 'Hedef Ortalama';
-                container.innerHTML = '<input type="number" id="targetValue" min="0" max="100" step="0.01" placeholder="0-100" required>';
-            } else if (targetType === 'semester') {
-                targetLabel.textContent = 'Dönem Ortalaması Hesapla';
-                container.innerHTML = '';
-                renderCourses();
-                coursesSection.classList.add('show');
+                targetHint.textContent = 'Seçtiğin harf notuna ulaşmak için gereken minimum finali hesaplar.';
+            } else if (target === 'average') {
+                targetGroup.style.display = 'block';
+                targetLabel.textContent = 'Hedef ortalama';
+                container.innerHTML = '<input type="number" id="targetValue" min="0" max="100" step="0.01" placeholder="0 — 100" required inputmode="decimal">';
+                targetHint.textContent = 'Seçtiğin sayısal ortalamaya ulaşmak için gereken minimum finali hesaplar.';
             }
         }
 
@@ -567,6 +1112,8 @@
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
+                btn.setAttribute('role', 'tab');
+                btn.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
                 btn.textContent = semester.donem;
                 btn.onclick = (e) => {
                     e.preventDefault();
@@ -602,54 +1149,141 @@
                     return;
                 }
 
+                const vizePct = Math.round(weights.vize * 100);
+                const finalPct = Math.round(weights.final * 100);
+                const quizPct = Math.round(weights.quiz * 100);
+
                 const courseItem = document.createElement('div');
                 courseItem.className = 'course-item';
+                courseItem.dataset.courseIndex = courseIndex;
                 courseItem.innerHTML = `
                     <div class="course-name">${courseName}</div>
+                    <div class="course-subsection-label">Puanlar</div>
                     <div class="course-inputs">
                         <div class="course-input-group">
                             <label>Vize</label>
-                            <input type="number" class="course-vize" min="0" max="100" step="0.01" placeholder="0-100" data-course-index="${courseIndex}" data-ders="${courseName}" data-vize-weight="${weights.vize}" data-final-weight="${weights.final}" data-quiz-weight="${weights.quiz}">
+                            <input type="number" class="course-vize" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" data-course-index="${courseIndex}" data-ders="${courseName}">
                         </div>
                         <div class="course-input-group">
                             <label>Final</label>
-                            <input type="number" class="course-final" min="0" max="100" step="0.01" placeholder="0-100" data-course-index="${courseIndex}">
+                            <input type="number" class="course-final" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" data-course-index="${courseIndex}">
                         </div>
                         <div class="course-input-group">
-                            <label>Quiz (Opsiyonel)</label>
-                            <input type="number" class="course-quiz" min="0" max="100" step="0.01" placeholder="0-100" data-course-index="${courseIndex}">
+                            <label>Quiz</label>
+                            <input type="number" class="course-quiz" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" data-course-index="${courseIndex}">
                         </div>
                     </div>
+                    <div class="course-subsection-label">Ağırlıklar (%)</div>
+                    <div class="course-inputs">
+                        <div class="course-input-group">
+                            <label>Vize %</label>
+                            <input type="number" class="course-vize-weight" min="0" max="100" step="1" inputmode="numeric" value="${vizePct}" data-course-index="${courseIndex}">
+                        </div>
+                        <div class="course-input-group">
+                            <label>Final %</label>
+                            <input type="number" class="course-final-weight" min="0" max="100" step="1" inputmode="numeric" value="${finalPct}" data-course-index="${courseIndex}">
+                        </div>
+                        <div class="course-input-group">
+                            <label>Quiz %</label>
+                            <input type="number" class="course-quiz-weight" min="0" max="100" step="1" inputmode="numeric" value="${quizPct}" data-course-index="${courseIndex}">
+                        </div>
+                    </div>
+                    <div class="course-weight-hint" data-course-index="${courseIndex}">Toplam ${vizePct + finalPct + quizPct}%</div>
                 `;
                 coursesContent.appendChild(courseItem);
+
+                const weightInputs = courseItem.querySelectorAll('.course-vize-weight, .course-final-weight, .course-quiz-weight');
+                weightInputs.forEach(inp => inp.addEventListener('input', () => updateCourseWeightHint(courseIndex)));
             });
 
-            // Tab butonlarını güncelle
             document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', i === index);
+                const active = i === index;
+                btn.classList.toggle('active', active);
+                btn.setAttribute('aria-selected', active ? 'true' : 'false');
             });
         }
 
         function validateScore(value, name) {
-            if (value < 0 || value > 100) {
+            if (!Number.isFinite(value) || value < 0 || value > 100) {
                 throw new Error(`${name} değeri 0 ile 100 arasında olmalıdır.`);
             }
         }
 
-        function calculateMinimumFinal(ders, vize, targetScore) {
+        function calculateMinimumFinal(weights, vize, quiz, targetScore) {
             validateScore(vize, "Vize");
             validateScore(targetScore, "Hedef puan");
+            if (!weights || !Number.isFinite(weights.final) || weights.final <= 0) {
+                throw new Error('Final ağırlığı sıfırdan büyük olmalıdır.');
+            }
+            const quizContrib = weights.quiz > 0 && Number.isFinite(quiz) ? quiz * weights.quiz : 0;
+            return (targetScore - vize * weights.vize - quizContrib) / weights.final;
+        }
 
-            const required = (targetScore - vize * ders.vize) / ders.final;
-            return required;
+        function setClassWeights(classLevel) {
+            if (!classLevel || !dersBilgileri || !dersBilgileri[classLevel]) return;
+            const w = dersBilgileri[classLevel];
+            const vize = Math.round(Number(w.vize ?? 0) * 100);
+            const final = Math.round(Number(w.final ?? 0) * 100);
+            const quiz = Math.round(Number(w.quiz ?? 0) * 100);
+            document.getElementById('vizeWeight').value = vize;
+            document.getElementById('finalWeight').value = final;
+            document.getElementById('quizWeight').value = quiz;
+            updateWeightSum();
+        }
+
+        function updateWeightSum() {
+            const vizePct = parseFloat(document.getElementById('vizeWeight').value) || 0;
+            const finalPct = parseFloat(document.getElementById('finalWeight').value) || 0;
+            const quizPct = parseFloat(document.getElementById('quizWeight').value) || 0;
+            const sum = vizePct + finalPct + quizPct;
+            const hintEl = document.getElementById('weightHint');
+            const sumEl = document.getElementById('weightSum');
+            sumEl.textContent = `Toplam ${Number.isInteger(sum) ? sum : sum.toFixed(1)}%`;
+            hintEl.classList.toggle('invalid', Math.abs(sum - 100) > 0.1);
+
+            const quizSection = document.getElementById('quizPuanSection');
+            const quizInput = document.getElementById('quizPuan');
+            if (quizPct > 0) {
+                quizSection.style.display = 'block';
+                quizInput.setAttribute('required', 'required');
+            } else {
+                quizSection.style.display = 'none';
+                quizInput.removeAttribute('required');
+                quizInput.value = '';
+            }
+        }
+
+        function getMainWeights() {
+            const vizePct = parseFloat(document.getElementById('vizeWeight').value);
+            const finalPct = parseFloat(document.getElementById('finalWeight').value);
+            const quizPct = parseFloat(document.getElementById('quizWeight').value);
+            [['Vize', vizePct], ['Final', finalPct], ['Quiz', quizPct]].forEach(([n, v]) => {
+                if (!Number.isFinite(v) || v < 0 || v > 100) {
+                    throw new Error(`${n} ağırlığı 0 ile 100 arasında olmalıdır.`);
+                }
+            });
+            const sum = vizePct + finalPct + quizPct;
+            if (Math.abs(sum - 100) > 0.1) {
+                throw new Error(`Ağırlıkların toplamı 100% olmalı (şu an ${Number.isInteger(sum) ? sum : sum.toFixed(1)}%).`);
+            }
+            return { vize: vizePct / 100, final: finalPct / 100, quiz: quizPct / 100, vizePct, finalPct, quizPct };
+        }
+
+        function updateCourseWeightHint(courseIndex) {
+            const v = parseFloat(document.querySelector(`.course-vize-weight[data-course-index="${courseIndex}"]`).value) || 0;
+            const f = parseFloat(document.querySelector(`.course-final-weight[data-course-index="${courseIndex}"]`).value) || 0;
+            const q = parseFloat(document.querySelector(`.course-quiz-weight[data-course-index="${courseIndex}"]`).value) || 0;
+            const sum = v + f + q;
+            const hint = document.querySelector(`.course-weight-hint[data-course-index="${courseIndex}"]`);
+            if (!hint) return;
+            hint.textContent = `Toplam ${Number.isInteger(sum) ? sum : sum.toFixed(1)}%`;
+            hint.classList.toggle('invalid', Math.abs(sum - 100) > 0.1);
         }
 
         function findGrade(score) {
             const grades = ['AA', 'BA', 'BB', 'CB', 'CC', 'CD', 'DD', 'DF', 'F'];
             for (let grade of grades) {
-                if (score >= harfNotlari[grade]) {
-                    return grade;
-                }
+                if (score >= harfNotlari[grade]) return grade;
             }
             return 'F';
         }
@@ -661,7 +1295,7 @@
                     <div class="result-item ${className}">
                         <div class="result-title">${title}</div>
                         <div class="result-value">İmkansız</div>
-                        <div class="result-note">Hedefi ulaşmak imkansız. Final notu 0 ile 100 arasında olması gerekir ancak bu hedef için yeterli değildir.</div>
+                        <div class="result-note">Bu hedefe ulaşmak mümkün değil. Gerekli final puanı 100'ün üzerinde.</div>
                     </div>
                 `;
             }
@@ -670,7 +1304,7 @@
             let note = '';
             if (value < 0) {
                 displayValue = 0;
-                note = '<div class="result-note">Zaten hedefi garantilediniz! Final sınavında 0 alsanız bile hedefinize ulaşırsınız.</div>';
+                note = '<div class="result-note">Hedefi garantilediniz. Final sınavında 0 alsanız bile hedefinize ulaşırsınız.</div>';
             }
 
             return `
@@ -684,37 +1318,49 @@
 
         document.getElementById('calculatorForm').addEventListener('submit', function (e) {
             e.preventDefault();
+            clearBanner();
 
-            const targetType = document.getElementById('targetType').value;
             const classLevel = document.getElementById('class').value;
             const year = document.getElementById('year').value;
 
             if (!classLevel) {
-                alert('Lütfen sınıf seçiniz.');
+                showBanner('Lütfen sınıf seçiniz.');
                 return;
             }
 
             try {
                 let vize = null;
+                let quiz = null;
+                let weights = null;
 
-                // Dönem ortalaması dışında, vize puanı gerekli
-                if (targetType !== 'semester') {
+                if (activeMode !== 'semester') {
+                    weights = getMainWeights();
+
                     vize = parseFloat(document.getElementById('vizePuan').value);
                     validateScore(vize, "Vize");
 
-                    // Hedef değeri kontrol et
-                    const targetValue = document.getElementById('targetValue');
-                    if (!targetValue || !targetValue.value) {
-                        alert('Lütfen hedef değeri seçiniz.');
-                        return;
+                    if (weights.quiz > 0) {
+                        const quizRaw = document.getElementById('quizPuan').value;
+                        if (quizRaw === '' || quizRaw === null) {
+                            showBanner('Quiz ağırlığı 0%\'dan büyük. Lütfen quiz puanınızı giriniz.');
+                            return;
+                        }
+                        quiz = parseFloat(quizRaw);
+                        validateScore(quiz, "Quiz");
+                    }
+
+                    if (activeSingleTarget !== 'passing') {
+                        const targetValue = document.getElementById('targetValue');
+                        if (!targetValue || !targetValue.value) {
+                            showBanner('Lütfen hedef değeri seçiniz.');
+                            return;
+                        }
                     }
                 }
 
-                const ders = dersBilgileri[classLevel];
                 let results = '';
 
-                if (targetType === 'semester') {
-                    // Dönem ortalaması hesapla
+                if (activeMode === 'semester') {
                     const courseInputs = document.querySelectorAll('.course-vize');
                     let totalGPA = 0;
                     let courseCount = 0;
@@ -723,35 +1369,56 @@
                     courseInputs.forEach(vizeInput => {
                         const dersAdi = vizeInput.dataset.ders || 'Ders';
                         const courseIndex = vizeInput.dataset.courseIndex;
-                        const vizeWeight = Number(vizeInput.dataset.vizeWeight);
-                        const finalWeight = Number(vizeInput.dataset.finalWeight);
-                        const quizWeight = Number(vizeInput.dataset.quizWeight);
+                        const vizeWeightPct = parseFloat(document.querySelector(`.course-vize-weight[data-course-index="${courseIndex}"]`).value);
+                        const finalWeightPct = parseFloat(document.querySelector(`.course-final-weight[data-course-index="${courseIndex}"]`).value);
+                        const quizWeightPct = parseFloat(document.querySelector(`.course-quiz-weight[data-course-index="${courseIndex}"]`).value);
+
+                        if (![vizeWeightPct, finalWeightPct, quizWeightPct].every(v => Number.isFinite(v) && v >= 0 && v <= 100)) {
+                            throw new Error(`${dersAdi} için ağırlıklar 0 ile 100 arasında olmalıdır.`);
+                        }
+
                         const vizeVal = vizeInput.value ? parseFloat(vizeInput.value) : null;
                         const finalInput = document.querySelector(`.course-final[data-course-index="${courseIndex}"]`);
                         const finalVal = finalInput.value ? parseFloat(finalInput.value) : null;
                         const quizInput = document.querySelector(`.course-quiz[data-course-index="${courseIndex}"]`);
                         const quizVal = quizInput.value ? parseFloat(quizInput.value) : null;
 
-                        if (!Number.isFinite(vizeWeight) || !Number.isFinite(finalWeight) || !Number.isFinite(quizWeight)) {
-                            return;
+                        if (vizeVal === null || finalVal === null) return;
+
+                        const weightSumPct = vizeWeightPct + finalWeightPct + quizWeightPct;
+                        if (Math.abs(weightSumPct - 100) > 0.1) {
+                            throw new Error(`${dersAdi} için ağırlık toplamı 100% olmalı (şu an ${Number.isInteger(weightSumPct) ? weightSumPct : weightSumPct.toFixed(1)}%).`);
                         }
 
-                        if (vizeVal !== null && finalVal !== null) {
-                            validateScore(vizeVal, `${dersAdi} vize`);
-                            validateScore(finalVal, `${dersAdi} final`);
-                            if (quizVal !== null) validateScore(quizVal, `${dersAdi} quiz`);
-
-                            const courseGrade = vizeVal * vizeWeight + finalVal * finalWeight + (quizVal !== null ? quizVal * quizWeight : 0);
-                            const grade = findGrade(courseGrade);
-                            const gpa = gradeToGPA[grade];
-                            totalGPA += gpa;
-                            courseCount++;
-                            detailsHtml += `<div style="font-size: 12px; color: #666; margin: 5px 0;"><strong>${dersAdi}:</strong> ${courseGrade.toFixed(2)} <span class="grade-badge grade-${grade}">${grade}</span> (${gpa.toFixed(2)})</div>`;
+                        if (quizWeightPct > 0 && quizVal === null) {
+                            throw new Error(`${dersAdi} için quiz ağırlığı ${quizWeightPct}%. Quiz puanını giriniz.`);
                         }
+
+                        validateScore(vizeVal, `${dersAdi} vize`);
+                        validateScore(finalVal, `${dersAdi} final`);
+                        if (quizVal !== null) validateScore(quizVal, `${dersAdi} quiz`);
+
+                        const vizeWeight = vizeWeightPct / 100;
+                        const finalWeight = finalWeightPct / 100;
+                        const quizWeight = quizWeightPct / 100;
+                        const courseGrade = vizeVal * vizeWeight + finalVal * finalWeight + (quizVal !== null ? quizVal * quizWeight : 0);
+                        const grade = findGrade(courseGrade);
+                        const gpa = gradeToGPA[grade];
+                        totalGPA += gpa;
+                        courseCount++;
+                        detailsHtml += `
+                            <div class="course-detail">
+                                <span class="course-detail-name">${dersAdi} <span style="color: var(--muted); font-family: var(--font-mono); font-size: 11px;">· ${vizeWeightPct}·${finalWeightPct}·${quizWeightPct}%</span></span>
+                                <span class="course-detail-meta">
+                                    <span class="course-detail-score">${courseGrade.toFixed(2)}</span>
+                                    <span class="grade-badge grade-${grade}">${grade}</span>
+                                    <span>${gpa.toFixed(2)}</span>
+                                </span>
+                            </div>`;
                     });
 
                     if (courseCount === 0) {
-                        alert('Lütfen en az bir dersin vize ve final puanlarını giriniz.');
+                        showBanner('Lütfen en az bir dersin vize ve final puanlarını giriniz.');
                         return;
                     }
 
@@ -759,92 +1426,104 @@
 
                     results += `
                         <div class="result-item">
-                            <div class="result-title">Seçili Bilgiler</div>
-                            <div style="font-size: 13px; color: #666;">
-                                <strong>Yıl:</strong> ${year} | <strong>Sınıf:</strong> ${classLevel}. Sınıf | <strong>Dönem:</strong> ${mufredat[year][classLevel][currentSemester].donem}
+                            <div class="result-title">Seçili bilgiler</div>
+                            <div class="meta-line">
+                                <span><strong>Yıl</strong> ${year}</span>
+                                <span><strong>Sınıf</strong> ${classLevel}. sınıf</span>
+                                <span><strong>Dönem</strong> ${mufredat[year][classLevel][currentSemester].donem}</span>
                             </div>
                         </div>
                         <div class="result-item success">
                             <div class="result-title">Dönem GPA</div>
-                            <div class="result-value">${semesterGPA.toFixed(2)} / 4.0</div>
-                            <div class="result-note">Girilen ${courseCount} dersin 4'lük sistem ortalaması</div>
+                            <div class="result-value">${semesterGPA.toFixed(2)} <span style="font-size: 14px; color: var(--muted); font-weight: 400;">/ 4.00</span></div>
+                            <div class="result-note">Girilen ${courseCount} dersin 4'lük sistem ortalaması.</div>
                         </div>
                         <div class="result-item">
-                            <div class="result-title">Ders Detayları</div>
+                            <div class="result-title">Ders detayları</div>
                             ${detailsHtml}
                         </div>
                     `;
-                } else if (targetType === 'passing') {
-                    const requiredGecis = calculateMinimumFinal(ders, vize, gecisNotu);
+                } else if (activeSingleTarget === 'passing') {
+                    const requiredGecis = calculateMinimumFinal(weights, vize, quiz, gecisNotu);
                     const gradeGecis = findGrade(gecisNotu);
                     const isImpossibleGecis = requiredGecis > 100;
 
-                    const requiredSartli = calculateMinimumFinal(ders, vize, sartliGecisNotu);
+                    const requiredSartli = calculateMinimumFinal(weights, vize, quiz, sartliGecisNotu);
                     const gradeSartli = findGrade(sartliGecisNotu);
                     const isImpossibleSartli = requiredSartli > 100;
 
                     results += `
                         <div class="result-item">
-                            <div class="result-title">Seçili Bilgiler</div>
-                            <div style="font-size: 13px; color: #666;">
-                                <strong>Yıl:</strong> ${year} | <strong>Sınıf:</strong> ${classLevel}. Sınıf
+                            <div class="result-title">Seçili bilgiler</div>
+                            <div class="meta-line">
+                                <span><strong>Yıl</strong> ${year}</span>
+                                <span><strong>Sınıf</strong> ${classLevel}. sınıf</span>
+                                <span><strong>Vize</strong> ${vize.toFixed(2)}</span>
+                                ${quiz !== null ? `<span><strong>Quiz</strong> ${quiz.toFixed(2)}</span>` : ''}
+                                <span><strong>Ağırlık</strong> ${weights.vizePct}·${weights.finalPct}·${weights.quizPct}%</span>
                             </div>
                         </div>
                     `;
                     results += formatResult(
-                        `Geçiş Notu (${gecisNotu}) için Gereken Minimum Final ${gradeGecis ? `<span class="grade-badge grade-${gradeGecis}">${gradeGecis}</span>` : ''}`,
+                        `Geçiş notu (${gecisNotu}) için gereken minimum final <span class="grade-badge grade-${gradeGecis}">${gradeGecis}</span>`,
                         requiredGecis,
                         isImpossibleGecis
                     );
                     results += `
                         <div class="result-item">
-                            <div class="result-title">Şartlı Geçiş Bilgisi (${sartliGecisNotu}) ${gradeSartli ? `<span class="grade-badge grade-${gradeSartli}">${gradeSartli}</span>` : ''}</div>
-                            <div style="font-size: 13px; color: #666; margin-top: 6px;">
-                                ${isImpossibleSartli
-                                    ? `Bu eşik için gerekli final notu 100'ün üzerinde.`
-                                    : `Bu eşik için gerekli minimum final: <strong>${Math.max(0, requiredSartli).toFixed(2)}</strong>`}
-                            </div>
+                            <div class="result-title">Şartlı geçiş (${sartliGecisNotu}) <span class="grade-badge grade-${gradeSartli}">${gradeSartli}</span></div>
+                            ${isImpossibleSartli
+                                ? `<div class="result-note">Bu eşik için gerekli final notu 100'ün üzerinde.</div>`
+                                : `<div class="result-value">${Math.max(0, requiredSartli).toFixed(2)}</div>`}
                         </div>
                     `;
-                } else if (targetType === 'grade') {
+                } else if (activeSingleTarget === 'grade') {
                     const hedefHarf = document.getElementById('targetValue').value;
                     if (!hedefHarf) {
-                        alert('Lütfen harf notu seçiniz.');
+                        showBanner('Lütfen harf notu seçiniz.');
                         return;
                     }
                     const targetScore = harfNotlari[hedefHarf];
-                    const required = calculateMinimumFinal(ders, vize, targetScore);
+                    const required = calculateMinimumFinal(weights, vize, quiz, targetScore);
                     const isImpossible = required > 100;
 
                     results += `
                         <div class="result-item">
-                            <div class="result-title">📋 Seçili Bilgiler</div>
-                            <div style="font-size: 13px; color: #666;">
-                                <strong>Yıl:</strong> ${year} | <strong>Sınıf:</strong> ${classLevel}. Sınıf
+                            <div class="result-title">Seçili bilgiler</div>
+                            <div class="meta-line">
+                                <span><strong>Yıl</strong> ${year}</span>
+                                <span><strong>Sınıf</strong> ${classLevel}. sınıf</span>
+                                <span><strong>Vize</strong> ${vize.toFixed(2)}</span>
+                                ${quiz !== null ? `<span><strong>Quiz</strong> ${quiz.toFixed(2)}</span>` : ''}
+                                <span><strong>Ağırlık</strong> ${weights.vizePct}·${weights.finalPct}·${weights.quizPct}%</span>
                             </div>
                         </div>
                     `;
                     results += formatResult(
-                        `🎯 ${hedefHarf} Notu (${targetScore}+) için Gereken Minimum Final <span class="grade-badge grade-${hedefHarf}">${hedefHarf}</span>`,
+                        `${hedefHarf} notu (${targetScore}+) için gereken minimum final <span class="grade-badge grade-${hedefHarf}">${hedefHarf}</span>`,
                         required,
                         isImpossible
                     );
-                } else if (targetType === 'average') {
+                } else if (activeSingleTarget === 'average') {
                     const targetAverage = parseFloat(document.getElementById('targetValue').value);
-                    validateScore(targetAverage, "Hedef Ortalama");
-                    const required = calculateMinimumFinal(ders, vize, targetAverage);
+                    validateScore(targetAverage, "Hedef ortalama");
+                    const required = calculateMinimumFinal(weights, vize, quiz, targetAverage);
                     const isImpossible = required > 100;
 
                     results += `
                         <div class="result-item">
-                            <div class="result-title">📋 Seçili Bilgiler</div>
-                            <div style="font-size: 13px; color: #666;">
-                                <strong>Yıl:</strong> ${year} | <strong>Sınıf:</strong> ${classLevel}. Sınıf
+                            <div class="result-title">Seçili bilgiler</div>
+                            <div class="meta-line">
+                                <span><strong>Yıl</strong> ${year}</span>
+                                <span><strong>Sınıf</strong> ${classLevel}. sınıf</span>
+                                <span><strong>Vize</strong> ${vize.toFixed(2)}</span>
+                                ${quiz !== null ? `<span><strong>Quiz</strong> ${quiz.toFixed(2)}</span>` : ''}
+                                <span><strong>Ağırlık</strong> ${weights.vizePct}·${weights.finalPct}·${weights.quizPct}%</span>
                             </div>
                         </div>
                     `;
                     results += formatResult(
-                        `🎯 ${targetAverage} Ortalama için Gereken Minimum Final`,
+                        `${targetAverage.toFixed(2)} ortalama için gereken minimum final`,
                         required,
                         isImpossible
                     );
@@ -852,24 +1531,53 @@
 
                 document.getElementById('resultsContent').innerHTML = results;
                 document.getElementById('results').classList.add('show');
-                window.scrollTo({ top: document.getElementById('results').offsetTop - 100, behavior: 'smooth' });
+                window.scrollTo({ top: document.getElementById('results').offsetTop - 80, behavior: 'smooth' });
             } catch (error) {
-                alert(error.message);
+                showBanner(error.message);
             }
         });
 
-        // Sınıf seçildiğinde kursları göster
+        document.getElementById('calculatorForm').addEventListener('reset', function () {
+            clearBanner();
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('resultsContent').innerHTML = '';
+            setTimeout(() => {
+                const cls = document.getElementById('class').value;
+                if (cls && dersBilgileri[cls]) {
+                    setClassWeights(cls);
+                } else {
+                    document.getElementById('vizeWeight').value = 40;
+                    document.getElementById('finalWeight').value = 60;
+                    document.getElementById('quizWeight').value = 0;
+                }
+                switchMode('single');
+                switchSingleTarget('passing');
+                updateWeightSum();
+            }, 0);
+        });
+
         document.getElementById('class').addEventListener('change', function () {
-            const targetType = document.getElementById('targetType').value;
-            if (targetType === 'semester') {
+            setClassWeights(this.value);
+            if (activeMode === 'semester') {
                 renderCourses();
             }
         });
 
-        // İlk çalıştırmada hedef giriş alanını güncelle
-        updateTargetInput();
-    </script>
+        document.querySelectorAll('.mode-tab').forEach(btn => {
+            btn.addEventListener('click', () => switchMode(btn.dataset.mode));
+        });
 
+        document.querySelectorAll('#singleTarget .seg-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchSingleTarget(btn.dataset.target));
+        });
+
+        ['vizeWeight', 'finalWeight', 'quizWeight'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateWeightSum);
+        });
+
+        updateWeightSum();
+        switchSingleTarget('passing');
+    </script>
 </body>
 
 </html>
