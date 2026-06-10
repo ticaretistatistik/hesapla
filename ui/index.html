@@ -565,6 +565,22 @@
             color: var(--bad);
         }
 
+        .course-item.custom-course {
+            border-left: 3px solid var(--accent);
+            background: var(--surface);
+        }
+
+        .course-inputs.four-cols {
+            grid-template-columns: 1.2fr 1.2fr 1.2fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 560px) {
+            .course-inputs.four-cols {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .weights-row {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -946,6 +962,14 @@
                         <h2 id="coursesTitle" class="courses-title">Ders notlarınız</h2>
                         <div class="tab-buttons" id="semesterTabs" role="tablist"></div>
                         <div id="coursesContent"></div>
+                        
+                        <div class="extra-courses-actions" style="margin-top: 16px; margin-bottom: 20px;">
+                            <button type="button" class="btn-secondary" id="btnAddExtraCourse" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; border-style: dashed; border-width: 1.5px; border-color: var(--line-strong);">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                Alttan Alınan / Harici Ders Ekle
+                            </button>
+                        </div>
+
                         <p class="target-hint" id="semesterHint">Girdiğin derslerin vize/final/quiz notlarından dönem GPA'nı hesaplar. Sınıf seçtikten sonra dersler otomatik listelenir.</p>
                     </section>
                 </div>
@@ -1011,6 +1035,8 @@
         let currentSemester = 0;
         let activeMode = 'single';             // 'single' | 'semester'
         let activeSingleTarget = 'passing';    // 'passing' | 'grade' | 'average'
+        let extraCourses = {};                 // Key: "year-class-semesterIndex", Value: Array of course objects
+        let savedInputs = {};                  // Key: "year-class-semesterIndex-type-idOrIndex", Value: Object of values
 
         document.getElementById('year').value = '2025-2026';
 
@@ -1125,7 +1151,81 @@
             showSemester(0);
         }
 
+        function saveCurrentInputs() {
+            const classLevel = document.getElementById('class').value;
+            const year = document.getElementById('year').value;
+            if (!classLevel || !year) return;
+
+            const courseItems = document.querySelectorAll('#coursesContent .course-item');
+            courseItems.forEach(item => {
+                const isCustom = item.classList.contains('custom-course');
+                const idOrIndex = isCustom ? item.dataset.courseId : item.dataset.courseIndex;
+                const key = `${year}-${classLevel}-${currentSemester}-${isCustom ? 'custom' : 'curriculum'}-${idOrIndex}`;
+
+                const vizeInput = item.querySelector('.course-vize');
+                const finalInput = item.querySelector('.course-final');
+                const quizInput = item.querySelector('.course-quiz');
+
+                const vizeVal = vizeInput ? vizeInput.value : '';
+                const finalVal = finalInput ? finalInput.value : '';
+                const quizVal = quizInput ? quizInput.value : '';
+
+                const vizeWeight = item.querySelector('.course-vize-weight').value;
+                const finalWeight = item.querySelector('.course-final-weight').value;
+                const quizWeight = item.querySelector('.course-quiz-weight').value;
+
+                savedInputs[key] = {
+                    vizeVal,
+                    finalVal,
+                    quizVal,
+                    vizeWeight,
+                    finalWeight,
+                    quizWeight
+                };
+
+                if (isCustom) {
+                    const nameVal = item.querySelector('.course-name-input').value;
+                    const aktsVal = item.querySelector('.course-akts').value;
+                    const courseKey = `${year}-${classLevel}-${currentSemester}`;
+                    if (extraCourses[courseKey]) {
+                        const customCourse = extraCourses[courseKey].find(c => String(c.id) === String(idOrIndex));
+                        if (customCourse) {
+                            customCourse.ad = nameVal;
+                            customCourse.akts = Number(aktsVal) || 0;
+                            customCourse.vizeWeightPct = Number(vizeWeight) || 0;
+                            customCourse.finalWeightPct = Number(finalWeight) || 0;
+                            customCourse.quizWeightPct = Number(quizWeight) || 0;
+                            customCourse.vizeVal = vizeVal;
+                            customCourse.finalVal = finalVal;
+                            customCourse.quizVal = quizVal;
+                        }
+                    }
+                }
+            });
+        }
+
+        function deleteExtraCourse(id) {
+            saveCurrentInputs();
+
+            const classLevel = document.getElementById('class').value;
+            const year = document.getElementById('year').value;
+            const courseKey = `${year}-${classLevel}-${currentSemester}`;
+
+            if (extraCourses[courseKey]) {
+                extraCourses[courseKey] = extraCourses[courseKey].filter(c => String(c.id) !== String(id));
+            }
+
+            const inputKey = `${year}-${classLevel}-${currentSemester}-custom-${id}`;
+            delete savedInputs[inputKey];
+
+            showSemester(currentSemester);
+        }
+
         function showSemester(index) {
+            if (document.querySelectorAll('#coursesContent .course-item').length > 0) {
+                saveCurrentInputs();
+            }
+
             currentSemester = index;
             const classLevel = document.getElementById('class').value;
             const year = document.getElementById('year').value;
@@ -1133,6 +1233,8 @@
             const coursesContent = document.getElementById('coursesContent');
 
             coursesContent.innerHTML = '';
+            
+            // 1. Render curriculum courses
             semester.dersler.forEach((ders, courseIndex) => {
                 if (typeof ders !== 'object' || ders === null) {
                     return;
@@ -1149,51 +1251,133 @@
                     return;
                 }
 
-                const vizePct = Math.round(weights.vize * 100);
-                const finalPct = Math.round(weights.final * 100);
-                const quizPct = Math.round(weights.quiz * 100);
+                const key = `${year}-${classLevel}-${currentSemester}-curriculum-${courseIndex}`;
+                const saved = savedInputs[key];
+
+                const vizeVal = saved ? saved.vizeVal : '';
+                const finalVal = saved ? saved.finalVal : '';
+                const quizVal = saved ? saved.quizVal : '';
+
+                const vizePct = saved ? parseFloat(saved.vizeWeight) : Math.round(weights.vize * 100);
+                const finalPct = saved ? parseFloat(saved.finalWeight) : Math.round(weights.final * 100);
+                const quizPct = saved ? parseFloat(saved.quizWeight) : Math.round(weights.quiz * 100);
 
                 const courseItem = document.createElement('div');
                 courseItem.className = 'course-item';
                 courseItem.dataset.courseIndex = courseIndex;
+                courseItem.dataset.akts = ders.akts;
                 courseItem.innerHTML = `
-                    <div class="course-name">${courseName}</div>
+                    <div class="course-name">${courseName} <span style="font-weight: normal; color: var(--muted); font-family: var(--font-mono); font-size: 11px; margin-left: 4px;">(${ders.akts} AKTS)</span></div>
                     <div class="course-subsection-label">Puanlar</div>
                     <div class="course-inputs">
                         <div class="course-input-group">
                             <label>Vize</label>
-                            <input type="number" class="course-vize" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" data-course-index="${courseIndex}" data-ders="${courseName}">
+                            <input type="number" class="course-vize" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" value="${vizeVal}">
                         </div>
                         <div class="course-input-group">
                             <label>Final</label>
-                            <input type="number" class="course-final" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" data-course-index="${courseIndex}">
+                            <input type="number" class="course-final" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" value="${finalVal}">
                         </div>
                         <div class="course-input-group">
                             <label>Quiz</label>
-                            <input type="number" class="course-quiz" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" data-course-index="${courseIndex}">
+                            <input type="number" class="course-quiz" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" value="${quizVal}">
                         </div>
                     </div>
                     <div class="course-subsection-label">Ağırlıklar (%)</div>
                     <div class="course-inputs">
                         <div class="course-input-group">
                             <label>Vize %</label>
-                            <input type="number" class="course-vize-weight" min="0" max="100" step="1" inputmode="numeric" value="${vizePct}" data-course-index="${courseIndex}">
+                            <input type="number" class="course-vize-weight" min="0" max="100" step="1" inputmode="numeric" value="${vizePct}">
                         </div>
                         <div class="course-input-group">
                             <label>Final %</label>
-                            <input type="number" class="course-final-weight" min="0" max="100" step="1" inputmode="numeric" value="${finalPct}" data-course-index="${courseIndex}">
+                            <input type="number" class="course-final-weight" min="0" max="100" step="1" inputmode="numeric" value="${finalPct}">
                         </div>
                         <div class="course-input-group">
                             <label>Quiz %</label>
-                            <input type="number" class="course-quiz-weight" min="0" max="100" step="1" inputmode="numeric" value="${quizPct}" data-course-index="${courseIndex}">
+                            <input type="number" class="course-quiz-weight" min="0" max="100" step="1" inputmode="numeric" value="${quizPct}">
                         </div>
                     </div>
-                    <div class="course-weight-hint" data-course-index="${courseIndex}">Toplam ${vizePct + finalPct + quizPct}%</div>
+                    <div class="course-weight-hint">Toplam ${vizePct + finalPct + quizPct}%</div>
                 `;
                 coursesContent.appendChild(courseItem);
 
                 const weightInputs = courseItem.querySelectorAll('.course-vize-weight, .course-final-weight, .course-quiz-weight');
-                weightInputs.forEach(inp => inp.addEventListener('input', () => updateCourseWeightHint(courseIndex)));
+                weightInputs.forEach(inp => inp.addEventListener('input', () => updateCourseWeightHint(courseItem)));
+            });
+
+            // 2. Render custom / extra courses
+            const courseKey = `${year}-${classLevel}-${currentSemester}`;
+            const extras = extraCourses[courseKey] || [];
+            extras.forEach(ders => {
+                const key = `${year}-${classLevel}-${currentSemester}-custom-${ders.id}`;
+                const saved = savedInputs[key];
+
+                const vizeVal = saved ? saved.vizeVal : (ders.vizeVal || '');
+                const finalVal = saved ? saved.finalVal : (ders.finalVal || '');
+                const quizVal = saved ? saved.quizVal : (ders.quizVal || '');
+
+                const vizePct = saved ? parseFloat(saved.vizeWeight) : ders.vizeWeightPct;
+                const finalPct = saved ? parseFloat(saved.finalWeight) : ders.finalWeightPct;
+                const quizPct = saved ? parseFloat(saved.quizWeight) : ders.quizWeightPct;
+
+                const courseItem = document.createElement('div');
+                courseItem.className = 'course-item custom-course';
+                courseItem.dataset.courseId = ders.id;
+                courseItem.innerHTML = `
+                    <div class="course-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 12px;">
+                        <input type="text" class="course-name-input" value="${ders.ad}" placeholder="Ders Adı (örn: Matematik 1)" style="font-family: var(--font-sans); font-weight: 500; font-size: 14px; border: none; border-bottom: 1px dashed var(--line-strong); padding: 4px 0; background: transparent; flex-grow: 1; color: var(--ink);" required />
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 10px; font-family: var(--font-mono); background: var(--accent-soft); color: var(--accent-ink); padding: 2px 6px; font-weight: 600; text-transform: uppercase; white-space: nowrap;">Alttan / Harici</span>
+                            <button type="button" class="btn-delete-course" onclick="deleteExtraCourse('${ders.id}')" style="background: transparent; color: var(--bad); padding: 4px 8px; font-size: 12px; border: none; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                Sil
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="course-subsection-label" style="margin-top: 0; margin-bottom: 8px;">Puanlar & AKTS</div>
+                    
+                    <div class="course-inputs four-cols">
+                        <div class="course-input-group">
+                            <label>Vize</label>
+                            <input type="number" class="course-vize" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" value="${vizeVal}">
+                        </div>
+                        <div class="course-input-group">
+                            <label>Final</label>
+                            <input type="number" class="course-final" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" value="${finalVal}">
+                        </div>
+                        <div class="course-input-group">
+                            <label>Quiz</label>
+                            <input type="number" class="course-quiz" min="0" max="100" step="0.01" placeholder="0 — 100" inputmode="decimal" value="${quizVal}">
+                        </div>
+                        <div class="course-input-group">
+                            <label>AKTS</label>
+                            <input type="number" class="course-akts" min="0" max="30" step="1" placeholder="AKTS" inputmode="numeric" value="${ders.akts}" required>
+                        </div>
+                    </div>
+
+                    <div class="course-subsection-label">Ağırlıklar (%)</div>
+                    <div class="course-inputs">
+                        <div class="course-input-group">
+                            <label>Vize %</label>
+                            <input type="number" class="course-vize-weight" min="0" max="100" step="1" inputmode="numeric" value="${vizePct}">
+                        </div>
+                        <div class="course-input-group">
+                            <label>Final %</label>
+                            <input type="number" class="course-final-weight" min="0" max="100" step="1" inputmode="numeric" value="${finalPct}">
+                        </div>
+                        <div class="course-input-group">
+                            <label>Quiz %</label>
+                            <input type="number" class="course-quiz-weight" min="0" max="100" step="1" inputmode="numeric" value="${quizPct}">
+                        </div>
+                    </div>
+                    <div class="course-weight-hint">Toplam ${vizePct + finalPct + quizPct}%</div>
+                `;
+                coursesContent.appendChild(courseItem);
+
+                const weightInputs = courseItem.querySelectorAll('.course-vize-weight, .course-final-weight, .course-quiz-weight');
+                weightInputs.forEach(inp => inp.addEventListener('input', () => updateCourseWeightHint(courseItem)));
             });
 
             document.querySelectorAll('.tab-btn').forEach((btn, i) => {
@@ -1269,12 +1453,12 @@
             return { vize: vizePct / 100, final: finalPct / 100, quiz: quizPct / 100, vizePct, finalPct, quizPct };
         }
 
-        function updateCourseWeightHint(courseIndex) {
-            const v = parseFloat(document.querySelector(`.course-vize-weight[data-course-index="${courseIndex}"]`).value) || 0;
-            const f = parseFloat(document.querySelector(`.course-final-weight[data-course-index="${courseIndex}"]`).value) || 0;
-            const q = parseFloat(document.querySelector(`.course-quiz-weight[data-course-index="${courseIndex}"]`).value) || 0;
+        function updateCourseWeightHint(courseItem) {
+            const v = parseFloat(courseItem.querySelector('.course-vize-weight').value) || 0;
+            const f = parseFloat(courseItem.querySelector('.course-final-weight').value) || 0;
+            const q = parseFloat(courseItem.querySelector('.course-quiz-weight').value) || 0;
             const sum = v + f + q;
-            const hint = document.querySelector(`.course-weight-hint[data-course-index="${courseIndex}"]`);
+            const hint = courseItem.querySelector('.course-weight-hint');
             if (!hint) return;
             hint.textContent = `Toplam ${Number.isInteger(sum) ? sum : sum.toFixed(1)}%`;
             hint.classList.toggle('invalid', Math.abs(sum - 100) > 0.1);
@@ -1361,27 +1545,47 @@
                 let results = '';
 
                 if (activeMode === 'semester') {
-                    const courseInputs = document.querySelectorAll('.course-vize');
-                    let totalGPA = 0;
+                    const courseItems = document.querySelectorAll('#coursesContent .course-item');
+                    let totalWeightedGPA = 0;
+                    let totalAKTS = 0;
                     let courseCount = 0;
                     let detailsHtml = '';
 
-                    courseInputs.forEach(vizeInput => {
-                        const dersAdi = vizeInput.dataset.ders || 'Ders';
-                        const courseIndex = vizeInput.dataset.courseIndex;
-                        const vizeWeightPct = parseFloat(document.querySelector(`.course-vize-weight[data-course-index="${courseIndex}"]`).value);
-                        const finalWeightPct = parseFloat(document.querySelector(`.course-final-weight[data-course-index="${courseIndex}"]`).value);
-                        const quizWeightPct = parseFloat(document.querySelector(`.course-quiz-weight[data-course-index="${courseIndex}"]`).value);
+                    courseItems.forEach(courseItem => {
+                        let dersAdi = 'Ders';
+                        const nameInput = courseItem.querySelector('.course-name-input');
+                        if (nameInput) {
+                            dersAdi = nameInput.value.trim() || 'Yeni Ders';
+                        } else {
+                            const nameEl = courseItem.querySelector('.course-name');
+                            if (nameEl) {
+                                dersAdi = nameEl.textContent.split(' (')[0].trim();
+                            }
+                        }
+
+                        let akts = 0;
+                        const aktsInput = courseItem.querySelector('.course-akts');
+                        if (aktsInput) {
+                            akts = parseFloat(aktsInput.value);
+                        } else {
+                            akts = parseFloat(courseItem.dataset.akts) || 0;
+                        }
+
+                        const vizeInput = courseItem.querySelector('.course-vize');
+                        const finalInput = courseItem.querySelector('.course-final');
+                        const quizInput = courseItem.querySelector('.course-quiz');
+
+                        const vizeWeightPct = parseFloat(courseItem.querySelector('.course-vize-weight').value) || 0;
+                        const finalWeightPct = parseFloat(courseItem.querySelector('.course-final-weight').value) || 0;
+                        const quizWeightPct = parseFloat(courseItem.querySelector('.course-quiz-weight').value) || 0;
 
                         if (![vizeWeightPct, finalWeightPct, quizWeightPct].every(v => Number.isFinite(v) && v >= 0 && v <= 100)) {
                             throw new Error(`${dersAdi} için ağırlıklar 0 ile 100 arasında olmalıdır.`);
                         }
 
-                        const vizeVal = vizeInput.value ? parseFloat(vizeInput.value) : null;
-                        const finalInput = document.querySelector(`.course-final[data-course-index="${courseIndex}"]`);
-                        const finalVal = finalInput.value ? parseFloat(finalInput.value) : null;
-                        const quizInput = document.querySelector(`.course-quiz[data-course-index="${courseIndex}"]`);
-                        const quizVal = quizInput.value ? parseFloat(quizInput.value) : null;
+                        const vizeVal = vizeInput && vizeInput.value ? parseFloat(vizeInput.value) : null;
+                        const finalVal = finalInput && finalInput.value ? parseFloat(finalInput.value) : null;
+                        const quizVal = quizInput && quizInput.value ? parseFloat(quizInput.value) : null;
 
                         if (vizeVal === null || finalVal === null) return;
 
@@ -1398,17 +1602,24 @@
                         validateScore(finalVal, `${dersAdi} final`);
                         if (quizVal !== null) validateScore(quizVal, `${dersAdi} quiz`);
 
+                        if (!Number.isFinite(akts) || akts < 0) {
+                            throw new Error(`${dersAdi} için geçerli bir AKTS değeri girilmelidir.`);
+                        }
+
                         const vizeWeight = vizeWeightPct / 100;
                         const finalWeight = finalWeightPct / 100;
                         const quizWeight = quizWeightPct / 100;
                         const courseGrade = vizeVal * vizeWeight + finalVal * finalWeight + (quizVal !== null ? quizVal * quizWeight : 0);
                         const grade = findGrade(courseGrade);
                         const gpa = gradeToGPA[grade];
-                        totalGPA += gpa;
+
+                        totalWeightedGPA += gpa * akts;
+                        totalAKTS += akts;
                         courseCount++;
+
                         detailsHtml += `
                             <div class="course-detail">
-                                <span class="course-detail-name">${dersAdi} <span style="color: var(--muted); font-family: var(--font-mono); font-size: 11px;">· ${vizeWeightPct}·${finalWeightPct}·${quizWeightPct}%</span></span>
+                                <span class="course-detail-name">${dersAdi} <span style="color: var(--muted); font-family: var(--font-mono); font-size: 11px;">· ${akts} AKTS · ${vizeWeightPct}/${finalWeightPct}/${quizWeightPct}%</span></span>
                                 <span class="course-detail-meta">
                                     <span class="course-detail-score">${courseGrade.toFixed(2)}</span>
                                     <span class="grade-badge grade-${grade}">${grade}</span>
@@ -1422,7 +1633,7 @@
                         return;
                     }
 
-                    const semesterGPA = totalGPA / courseCount;
+                    const semesterGPA = totalAKTS > 0 ? (totalWeightedGPA / totalAKTS) : (totalWeightedGPA / courseCount);
 
                     results += `
                         <div class="result-item">
@@ -1436,7 +1647,7 @@
                         <div class="result-item success">
                             <div class="result-title">Dönem GPA</div>
                             <div class="result-value">${semesterGPA.toFixed(2)} <span style="font-size: 14px; color: var(--muted); font-weight: 400;">/ 4.00</span></div>
-                            <div class="result-note">Girilen ${courseCount} dersin 4'lük sistem ortalaması.</div>
+                            <div class="result-note">Girilen ${courseCount} dersin AKTS ağırlıklı 4'lük sistem ortalaması.</div>
                         </div>
                         <div class="result-item">
                             <div class="result-title">Ders detayları</div>
@@ -1539,6 +1750,8 @@
 
         document.getElementById('calculatorForm').addEventListener('reset', function () {
             clearBanner();
+            extraCourses = {};
+            savedInputs = {};
             document.getElementById('results').classList.remove('show');
             document.getElementById('resultsContent').innerHTML = '';
             setTimeout(() => {
@@ -1557,10 +1770,42 @@
         });
 
         document.getElementById('class').addEventListener('change', function () {
+            if (activeMode === 'semester') {
+                saveCurrentInputs();
+            }
             setClassWeights(this.value);
             if (activeMode === 'semester') {
                 renderCourses();
             }
+        });
+
+        document.getElementById('btnAddExtraCourse').addEventListener('click', function () {
+            const classLevel = document.getElementById('class').value;
+            const year = document.getElementById('year').value;
+            
+            if (!classLevel) {
+                showBanner('Lütfen ders eklemeden önce sınıf seçiniz.');
+                return;
+            }
+            
+            const courseKey = `${year}-${classLevel}-${currentSemester}`;
+            if (!extraCourses[courseKey]) {
+                extraCourses[courseKey] = [];
+            }
+            
+            extraCourses[courseKey].push({
+                id: Date.now() + Math.random(),
+                ad: "Alttan Alınan Ders",
+                akts: 5,
+                vizeWeightPct: 40,
+                finalWeightPct: 60,
+                quizWeightPct: 0,
+                vizeVal: "",
+                finalVal: "",
+                quizVal: ""
+            });
+            
+            showSemester(currentSemester);
         });
 
         document.querySelectorAll('.mode-tab').forEach(btn => {
