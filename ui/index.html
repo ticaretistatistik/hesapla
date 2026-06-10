@@ -1151,6 +1151,67 @@
             showSemester(0);
         }
 
+        function getCurriculumCoursesOptions(selectedValue) {
+            let optionsHtml = `<option value="__custom__" ${selectedValue === '__custom__' ? 'selected' : ''}>Özel / Listede Olmayan Ders</option>`;
+            
+            for (let year in mufredat) {
+                for (let classLevel in mufredat[year]) {
+                    mufredat[year][classLevel].forEach((sem, semIdx) => {
+                        const optGroupLabel = `${classLevel}. Sınıf — ${sem.donem} Dönemi`;
+                        optionsHtml += `<optgroup label="${optGroupLabel}">`;
+                        sem.dersler.forEach((d, courseIdx) => {
+                            const valKey = `${year}-${classLevel}-${semIdx}-${courseIdx}`;
+                            const isSelected = selectedValue === valKey;
+                            optionsHtml += `<option value="${valKey}" ${isSelected ? 'selected' : ''}>${d.ad} (${d.akts} AKTS)</option>`;
+                        });
+                        optionsHtml += `</optgroup>`;
+                    });
+                }
+            }
+            return optionsHtml;
+        }
+
+        function handleCourseDropdownChange(selectEl, courseId) {
+            const card = selectEl.closest('.course-item');
+            const nameWrapper = card.querySelector('.custom-name-wrapper');
+            const nameInput = card.querySelector('.course-name-input');
+            const aktsInput = card.querySelector('.course-akts');
+            const vizeWeightInput = card.querySelector('.course-vize-weight');
+            const finalWeightInput = card.querySelector('.course-final-weight');
+            const quizWeightInput = card.querySelector('.course-quiz-weight');
+
+            const val = selectEl.value;
+
+            if (val === '__custom__') {
+                nameWrapper.style.display = 'block';
+                nameInput.value = '';
+                nameInput.focus();
+            } else {
+                nameWrapper.style.display = 'none';
+                try {
+                    const parts = val.split('-');
+                    const year = `${parts[0]}-${parts[1]}`;
+                    const classLevel = parts[2];
+                    const semIdx = parseInt(parts[3]);
+                    const courseIdx = parseInt(parts[4]);
+
+                    const dersData = mufredat[year][classLevel][semIdx].dersler[courseIdx];
+
+                    nameInput.value = dersData.ad;
+                    aktsInput.value = dersData.akts;
+                    vizeWeightInput.value = Math.round(dersData.vize * 100);
+                    finalWeightInput.value = Math.round(dersData.final * 100);
+                    quizWeightInput.value = Math.round(dersData.quiz * 100);
+
+                    updateCourseWeightHint(card);
+                } catch (e) {
+                    console.error('Müfredat dersi yüklenemedi', e);
+                }
+            }
+
+            saveCurrentInputs();
+        }
+
         function saveCurrentInputs() {
             const classLevel = document.getElementById('class').value;
             const year = document.getElementById('year').value;
@@ -1186,6 +1247,9 @@
                 if (isCustom) {
                     const nameVal = item.querySelector('.course-name-input').value;
                     const aktsVal = item.querySelector('.course-akts').value;
+                    const selectEl = item.querySelector('.course-select-dropdown');
+                    const selectedOption = selectEl ? selectEl.value : '__custom__';
+
                     const courseKey = `${year}-${classLevel}-${currentSemester}`;
                     if (extraCourses[courseKey]) {
                         const customCourse = extraCourses[courseKey].find(c => String(c.id) === String(idOrIndex));
@@ -1198,6 +1262,7 @@
                             customCourse.vizeVal = vizeVal;
                             customCourse.finalVal = finalVal;
                             customCourse.quizVal = quizVal;
+                            customCourse.selectedOption = selectedOption;
                         }
                     }
                 }
@@ -1321,18 +1386,31 @@
                 const finalPct = saved ? parseFloat(saved.finalWeight) : ders.finalWeightPct;
                 const quizPct = saved ? parseFloat(saved.quizWeight) : ders.quizWeightPct;
 
+                const selectedOption = ders.selectedOption || '__custom__';
+                const options = getCurriculumCoursesOptions(selectedOption);
+
                 const courseItem = document.createElement('div');
                 courseItem.className = 'course-item custom-course';
                 courseItem.dataset.courseId = ders.id;
                 courseItem.innerHTML = `
-                    <div class="course-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 12px;">
-                        <input type="text" class="course-name-input" value="${ders.ad}" placeholder="Ders Adı (örn: Matematik 1)" style="font-family: var(--font-sans); font-weight: 500; font-size: 14px; border: none; border-bottom: 1px dashed var(--line-strong); padding: 4px 0; background: transparent; flex-grow: 1; color: var(--ink);" required />
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="font-size: 10px; font-family: var(--font-mono); background: var(--accent-soft); color: var(--accent-ink); padding: 2px 6px; font-weight: 600; text-transform: uppercase; white-space: nowrap;">Alttan / Harici</span>
-                            <button type="button" class="btn-delete-course" onclick="deleteExtraCourse('${ders.id}')" style="background: transparent; color: var(--bad); padding: 4px 8px; font-size: 12px; border: none; display: flex; align-items: center; gap: 4px; cursor: pointer;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                                Sil
-                            </button>
+                    <div class="course-header" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; width: 100%;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <label style="margin-bottom: 0; font-weight: 600;">Ders Seçimi / Tanımı</label>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 10px; font-family: var(--font-mono); background: var(--accent-soft); color: var(--accent-ink); padding: 2px 6px; font-weight: 600; text-transform: uppercase; white-space: nowrap;">Alttan / Harici</span>
+                                <button type="button" class="btn-delete-course" onclick="deleteExtraCourse('${ders.id}')" style="background: transparent; color: var(--bad); padding: 4px 8px; font-size: 12px; border: none; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    Sil
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <select class="course-select-dropdown" onchange="handleCourseDropdownChange(this, '${ders.id}')" style="font-size: 13px; padding: 8px 10px; width: 100%; border: 1px solid var(--line); background-color: var(--surface);">
+                            ${options}
+                        </select>
+                        
+                        <div class="custom-name-wrapper" style="display: ${selectedOption === '__custom__' ? 'block' : 'none'}; width: 100%;">
+                            <input type="text" class="course-name-input" value="${ders.ad}" placeholder="Ders Adı (örn: Matematik 1)" style="font-family: var(--font-sans); font-weight: 500; font-size: 14px; border: none; border-bottom: 1px dashed var(--line-strong); padding: 4px 0; background: transparent; width: 100%; color: var(--ink);" required />
                         </div>
                     </div>
                     
@@ -1795,7 +1873,8 @@
             
             extraCourses[courseKey].push({
                 id: Date.now() + Math.random(),
-                ad: "Alttan Alınan Ders",
+                ad: "",
+                selectedOption: "__custom__",
                 akts: 5,
                 vizeWeightPct: 40,
                 finalWeightPct: 60,
