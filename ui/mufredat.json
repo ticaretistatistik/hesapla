@@ -309,8 +309,8 @@
             "ad": "Regresyon Analizi 2",
             "akts": 5,
             "vize": 0.4,
-            "final": 0.6,
-            "quiz": 0,
+            "final": 0.5,
+            "quiz": 0.1,
             "type": "Zorunlu"
           },
           {
