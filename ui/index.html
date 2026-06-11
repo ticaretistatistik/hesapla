@@ -886,6 +886,8 @@
                         aria-selected="true" aria-controls="panel-single" id="tab-single">Tek Ders Finali</button>
                     <button type="button" class="mode-tab" data-mode="semester" role="tab"
                         aria-selected="false" aria-controls="panel-semester" id="tab-semester">Dönem Ortalaması</button>
+                    <button type="button" class="mode-tab" data-mode="cgpa" role="tab"
+                        aria-selected="false" aria-controls="panel-cgpa" id="tab-cgpa">Genel AGNO (CGPA)</button>
                 </div>
 
                 <div class="tab-panel active" id="panel-single" role="tabpanel" aria-labelledby="tab-single">
@@ -974,6 +976,45 @@
                     </section>
                 </div>
 
+                <div class="tab-panel" id="panel-cgpa" role="tabpanel" aria-labelledby="tab-cgpa">
+                    <section class="cgpa-section" aria-labelledby="cgpaTitle">
+                        <h2 id="cgpaTitle" class="courses-title">Genel Ortalama Hesaplama</h2>
+                        
+                        <p class="target-hint" style="margin-bottom: 24px;">
+                            Geçmiş dönemlerdeki ortalama ve AKTS kredilerinizi girerek genel mezuniyet ortalamasını (CGPA) hesaplayın.
+                        </p>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="pastCgpa">Geçmiş Genel Ortalama (CGPA)</label>
+                                <input type="number" id="pastCgpa" min="0" max="4" step="0.01" placeholder="Örn: 2.85" inputmode="decimal">
+                                <div class="error" id="pastCgpaError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="pastAkts">Geçmiş Toplam AKTS</label>
+                                <input type="number" id="pastAkts" min="0" max="240" step="1" placeholder="Örn: 60" inputmode="numeric">
+                                <div class="error" id="pastAktsError"></div>
+                            </div>
+                        </div>
+
+                        <div class="info-box" style="margin-top: 10px; margin-bottom: 24px; font-size: 13px;">
+                            <strong>💡 İpucu:</strong> Eğer bu dönem sonundaki yeni genel ortalamayı hesaplamak istiyorsanız, yukarıya <strong>bu dönemden önceki</strong> genel ortalamanızı ve tamamlanan AKTS kredinizi yazın. Sistem, "Dönem Ortalaması" sekmesinde hesapladığınız yeni notları otomatik olarak bu dönem olarak ekleyecektir.
+                        </div>
+
+                        <h3 class="course-subsection-label" style="margin-top: 24px; margin-bottom: 12px; font-size: 11px;">Aktif Dönem Bilgileri (Dönem Ortalamasından Çekilir)</h3>
+                        <div class="row" style="background: var(--surface-2); padding: 14px; border: 1px solid var(--line); margin-bottom: 24px;">
+                            <div>
+                                <span style="font-size: 11px; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase;">Bu Dönem GPA</span>
+                                <div id="cgpaCurrentGpa" style="font-size: 20px; font-weight: 600; color: var(--ink); margin-top: 4px;">—</div>
+                            </div>
+                            <div>
+                                <span style="font-size: 11px; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase;">Bu Dönem AKTS</span>
+                                <div id="cgpaCurrentAkts" style="font-size: 20px; font-weight: 600; color: var(--ink); margin-top: 4px;">—</div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
                 <div class="button-row">
                     <button type="submit" class="btn-primary">Hesapla</button>
                     <button type="reset" class="btn-secondary">Temizle</button>
@@ -1011,6 +1052,77 @@
         let gecisNotu = 41;
         let sartliGecisNotu = 31;
 
+        let currentSemester = 0;
+        let activeMode = 'single';             // 'single' | 'semester' | 'cgpa'
+        let activeSingleTarget = 'passing';    // 'passing' | 'grade' | 'average'
+        let extraCourses = {};                 // Key: "year-class-semesterIndex", Value: Array of course objects
+        let savedInputs = {};                  // Key: "year-class-semesterIndex-type-idOrIndex", Value: Object of values
+        let calculatedSemesterGPA = null;
+        let calculatedSemesterAkts = 0;
+
+        function saveToLocalStorage() {
+            try {
+                const state = {
+                    extraCourses,
+                    savedInputs,
+                    classLevel: document.getElementById('class').value,
+                    year: document.getElementById('year').value,
+                    activeMode,
+                    activeSingleTarget,
+                    pastCgpa: document.getElementById('pastCgpa') ? document.getElementById('pastCgpa').value : '',
+                    pastAkts: document.getElementById('pastAkts') ? document.getElementById('pastAkts').value : '',
+                    calculatedSemesterGPA,
+                    calculatedSemesterAkts
+                };
+                localStorage.setItem('itici_gpa_state', JSON.stringify(state));
+            } catch (e) {
+                console.error('State local storage\'a kaydedilemedi', e);
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem('itici_gpa_state');
+                if (!saved) return;
+                const state = JSON.parse(saved);
+                
+                if (state.extraCourses) extraCourses = state.extraCourses;
+                if (state.savedInputs) savedInputs = state.savedInputs;
+                
+                if (state.year) document.getElementById('year').value = state.year;
+                if (state.classLevel) {
+                    document.getElementById('class').value = state.classLevel;
+                }
+                
+                if (state.pastCgpa && document.getElementById('pastCgpa')) document.getElementById('pastCgpa').value = state.pastCgpa;
+                if (state.pastAkts && document.getElementById('pastAkts')) document.getElementById('pastAkts').value = state.pastAkts;
+
+                if (state.calculatedSemesterGPA !== undefined) calculatedSemesterGPA = state.calculatedSemesterGPA;
+                if (state.calculatedSemesterAkts !== undefined) calculatedSemesterAkts = state.calculatedSemesterAkts;
+                
+                if (state.activeMode) {
+                    activeMode = state.activeMode;
+                }
+                if (state.activeSingleTarget) {
+                    activeSingleTarget = state.activeSingleTarget;
+                }
+            } catch (e) {
+                console.error('State local storage\'dan yüklenemedi', e);
+            }
+        }
+
+        function updateCgpaPanel() {
+            const currentGpaEl = document.getElementById('cgpaCurrentGpa');
+            const currentAktsEl = document.getElementById('cgpaCurrentAkts');
+            if (calculatedSemesterGPA !== null) {
+                currentGpaEl.textContent = calculatedSemesterGPA.toFixed(2);
+                currentAktsEl.textContent = calculatedSemesterAkts;
+            } else {
+                currentGpaEl.textContent = "Hesaplanmadı";
+                currentAktsEl.textContent = "—";
+            }
+        }
+
         Promise.all([
             fetch('config.json').then(r => r.json()),
             fetch('mufredat.json').then(r => r.json())
@@ -1023,20 +1135,20 @@
                 gecisNotu = Number(CONFIG.gecisNotu ?? 41);
                 sartliGecisNotu = Number(CONFIG.sartliGecisNotu ?? 31);
                 mufredat = muf;
+
+                loadFromLocalStorage();
+
                 const currentClass = document.getElementById('class').value;
                 if (currentClass) setClassWeights(currentClass);
                 else updateWeightSum();
+
+                switchMode(activeMode);
+                switchSingleTarget(activeSingleTarget);
             })
             .catch(e => {
                 console.error('Config dosyaları yüklenemedi', e);
                 showBanner('Sistem başlatılamadı. Lütfen sayfayı yenileyin.');
             });
-
-        let currentSemester = 0;
-        let activeMode = 'single';             // 'single' | 'semester'
-        let activeSingleTarget = 'passing';    // 'passing' | 'grade' | 'average'
-        let extraCourses = {};                 // Key: "year-class-semesterIndex", Value: Array of course objects
-        let savedInputs = {};                  // Key: "year-class-semesterIndex-type-idOrIndex", Value: Object of values
 
         document.getElementById('year').value = '2025-2026';
 
@@ -1054,6 +1166,9 @@
         }
 
         function switchMode(mode) {
+            if (activeMode === 'semester' && mode !== 'semester') {
+                saveCurrentInputs();
+            }
             activeMode = mode;
             clearBanner();
             document.getElementById('results').classList.remove('show');
@@ -1074,9 +1189,12 @@
                     && mufredat[document.getElementById('year').value][classLevel]) {
                     renderCourses();
                 }
+            } else if (mode === 'cgpa') {
+                updateCgpaPanel();
             } else {
                 updateWeightSum();
             }
+            saveToLocalStorage();
         }
 
         function switchSingleTarget(target) {
@@ -1120,6 +1238,7 @@
                 container.innerHTML = '<input type="number" id="targetValue" min="0" max="100" step="0.01" placeholder="0 — 100" required inputmode="decimal">';
                 targetHint.textContent = 'Seçtiğin sayısal ortalamaya ulaşmak için gereken minimum finali hesaplar.';
             }
+            saveToLocalStorage();
         }
 
         function renderCourses() {
@@ -1595,7 +1714,7 @@
                 let quiz = null;
                 let weights = null;
 
-                if (activeMode !== 'semester') {
+                if (activeMode === 'single') {
                     weights = getMainWeights();
 
                     vize = parseFloat(document.getElementById('vizePuan').value);
@@ -1628,6 +1747,9 @@
                     let totalAKTS = 0;
                     let courseCount = 0;
                     let detailsHtml = '';
+
+                    // Track courses for scenario analysis
+                    let scenariosData = [];
 
                     courseItems.forEach(courseItem => {
                         let dersAdi = 'Ders';
@@ -1664,6 +1786,21 @@
                         const vizeVal = vizeInput && vizeInput.value ? parseFloat(vizeInput.value) : null;
                         const finalVal = finalInput && finalInput.value ? parseFloat(finalInput.value) : null;
                         const quizVal = quizInput && quizInput.value ? parseFloat(quizInput.value) : null;
+
+                        // Save details for What-If analysis if vize is entered
+                        if (vizeVal !== null) {
+                            scenariosData.push({
+                                ad: dersAdi,
+                                vizeVal,
+                                finalVal,
+                                quizVal,
+                                vizeWeight: vizeWeightPct / 100,
+                                finalWeight: finalWeightPct / 100,
+                                quizWeight: quizWeightPct / 100,
+                                akts,
+                                quizWeightPct
+                            });
+                        }
 
                         if (vizeVal === null || finalVal === null) return;
 
@@ -1706,32 +1843,136 @@
                             </div>`;
                     });
 
-                    if (courseCount === 0) {
-                        showBanner('Lütfen en az bir dersin vize ve final puanlarını giriniz.');
+                    // Check if we calculated anything, or if we have vize inputs for what-if scenarios
+                    const missingFinalsData = scenariosData.filter(d => d.finalVal === null);
+
+                    if (courseCount === 0 && missingFinalsData.length === 0) {
+                        showBanner('Lütfen en az bir dersin notlarını giriniz.');
                         return;
                     }
 
-                    const semesterGPA = totalAKTS > 0 ? (totalWeightedGPA / totalAKTS) : (totalWeightedGPA / courseCount);
+                    let semesterGPA = 0;
+                    if (courseCount > 0) {
+                        semesterGPA = totalAKTS > 0 ? (totalWeightedGPA / totalAKTS) : (totalWeightedGPA / courseCount);
+                        
+                        // Update CGPA panel state
+                        calculatedSemesterGPA = semesterGPA;
+                        calculatedSemesterAkts = totalAKTS;
+                        updateCgpaPanel();
+                        saveToLocalStorage();
+
+                        results += `
+                            <div class="result-item">
+                                <div class="result-title">Seçili bilgiler</div>
+                                <div class="meta-line">
+                                    <span><strong>Yıl</strong> ${year}</span>
+                                    <span><strong>Sınıf</strong> ${classLevel}. sınıf</span>
+                                    <span><strong>Dönem</strong> ${mufredat[year][classLevel][currentSemester].donem}</span>
+                                </div>
+                            </div>
+                            <div class="result-item success">
+                                <div class="result-title">Dönem GPA</div>
+                                <div class="result-value">${semesterGPA.toFixed(2)} <span style="font-size: 14px; color: var(--muted); font-weight: 400;">/ 4.00</span></div>
+                                <div class="result-note">Girilen ${courseCount} dersin AKTS ağırlıklı 4'lük sistem ortalaması.</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-title">Ders detayları</div>
+                                ${detailsHtml}
+                            </div>
+                        `;
+                    }
+
+                    // 3. Ortalama Sihirbazı (What-If Scenarios)
+                    if (missingFinalsData.length > 0) {
+                        const runScenario = (finalScore) => {
+                            let tempWeightedGPA = 0;
+                            let tempTotalAKTS = 0;
+                            let tempCourseCount = 0;
+
+                            scenariosData.forEach(d => {
+                                const fScore = d.finalVal !== null ? d.finalVal : finalScore;
+                                const courseGrade = d.vizeVal * d.vizeWeight + fScore * d.finalWeight + (d.quizVal !== null ? d.quizVal * d.quizWeight : 0);
+                                const grade = findGrade(courseGrade);
+                                const gpa = gradeToGPA[grade];
+
+                                tempWeightedGPA += gpa * d.akts;
+                                tempTotalAKTS += d.akts;
+                                tempCourseCount++;
+                            });
+
+                            return tempTotalAKTS > 0 ? (tempWeightedGPA / tempTotalAKTS) : (tempWeightedGPA / tempCourseCount);
+                        };
+
+                        const gpa100 = runScenario(100);
+                        const gpa80 = runScenario(80);
+                        const gpa60 = runScenario(60);
+                        const gpa41 = runScenario(41);
+                        const gpa0 = runScenario(0);
+
+                        results += `
+                            <div class="result-item" style="border-left: 3px solid var(--accent);">
+                                <div class="result-title">🎯 Ortalama Sihirbazı (Kalan Dersler İçin Senaryolar)</div>
+                                <div class="result-note" style="margin-bottom: 12px;">Henüz final notu girilmemiş olan <strong>${missingFinalsData.length}</strong> ders için olası dönem ortalamaları:</div>
+                                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 4px;">
+                                        <span>🌟 Kalan tüm finaller 100 olursa:</span>
+                                        <strong>${gpa100.toFixed(2)}</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 4px;">
+                                        <span>😊 Kalan tüm finaller 80 olursa:</span>
+                                        <strong>${gpa80.toFixed(2)}</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 4px;">
+                                        <span>😐 Kalan tüm finaller 60 olursa:</span>
+                                        <strong>${gpa60.toFixed(2)}</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 4px;">
+                                        <span>⚠️ Kalan tüm finaller 41 (Geçiş Barajı) olursa:</span>
+                                        <strong>${gpa41.toFixed(2)}</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; padding-bottom: 4px;">
+                                        <span>❌ Kalan tüm finaller 0 olursa:</span>
+                                        <strong>${gpa0.toFixed(2)}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else if (activeMode === 'cgpa') {
+                    const pastCgpaVal = parseFloat(document.getElementById('pastCgpa').value) || 0;
+                    const pastAktsVal = parseFloat(document.getElementById('pastAkts').value) || 0;
+
+                    if (pastCgpaVal < 0 || pastCgpaVal > 4) {
+                        throw new Error('Geçmiş CGPA 0 ile 4 arasında olmalıdır.');
+                    }
+                    if (pastAktsVal < 0) {
+                        throw new Error('Geçmiş AKTS 0 veya daha büyük olmalıdır.');
+                    }
+
+                    if (calculatedSemesterGPA === null) {
+                        showBanner('Lütfen önce "Dönem Ortalaması" sekmesinde dönem notlarınızı hesaplayın.');
+                        return;
+                    }
+
+                    const totalPoints = (pastCgpaVal * pastAktsVal) + (calculatedSemesterGPA * calculatedSemesterAkts);
+                    const totalAkts = pastAktsVal + calculatedSemesterAkts;
+                    const finalCgpa = totalAkts > 0 ? (totalPoints / totalAkts) : 0;
 
                     results += `
                         <div class="result-item">
-                            <div class="result-title">Seçili bilgiler</div>
+                            <div class="result-title">Özet Bilgiler</div>
                             <div class="meta-line">
-                                <span><strong>Yıl</strong> ${year}</span>
-                                <span><strong>Sınıf</strong> ${classLevel}. sınıf</span>
-                                <span><strong>Dönem</strong> ${mufredat[year][classLevel][currentSemester].donem}</span>
+                                <span><strong>Geçmiş Ortalama:</strong> ${pastCgpaVal.toFixed(2)} (${pastAktsVal} AKTS)</span>
+                                <span><strong>Dönem Ortalaması:</strong> ${calculatedSemesterGPA.toFixed(2)} (${calculatedSemesterAkts} AKTS)</span>
                             </div>
                         </div>
                         <div class="result-item success">
-                            <div class="result-title">Dönem GPA</div>
-                            <div class="result-value">${semesterGPA.toFixed(2)} <span style="font-size: 14px; color: var(--muted); font-weight: 400;">/ 4.00</span></div>
-                            <div class="result-note">Girilen ${courseCount} dersin AKTS ağırlıklı 4'lük sistem ortalaması.</div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-title">Ders detayları</div>
-                            ${detailsHtml}
+                            <div class="result-title">Yeni Genel Ortalama (CGPA)</div>
+                            <div class="result-value">${finalCgpa.toFixed(2)} <span style="font-size: 14px; color: var(--muted); font-weight: 400;">/ 4.00</span></div>
+                            <div class="result-note">Toplam ${totalAkts} AKTS kredisine göre ağırlıklı genel ortalamanız.</div>
                         </div>
                     `;
+                    saveToLocalStorage();
                 } else if (activeSingleTarget === 'passing') {
                     const requiredGecis = calculateMinimumFinal(weights, vize, quiz, gecisNotu);
                     const gradeGecis = findGrade(gecisNotu);
@@ -1830,6 +2071,8 @@
             clearBanner();
             extraCourses = {};
             savedInputs = {};
+            calculatedSemesterGPA = null;
+            calculatedSemesterAkts = 0;
             document.getElementById('results').classList.remove('show');
             document.getElementById('resultsContent').innerHTML = '';
             setTimeout(() => {
@@ -1844,6 +2087,7 @@
                 switchMode('single');
                 switchSingleTarget('passing');
                 updateWeightSum();
+                saveToLocalStorage();
             }, 0);
         });
 
@@ -1855,6 +2099,7 @@
             if (activeMode === 'semester') {
                 renderCourses();
             }
+            saveToLocalStorage();
         });
 
         document.getElementById('btnAddExtraCourse').addEventListener('click', function () {
@@ -1898,6 +2143,9 @@
         ['vizeWeight', 'finalWeight', 'quizWeight'].forEach(id => {
             document.getElementById(id).addEventListener('input', updateWeightSum);
         });
+
+        document.getElementById('pastCgpa').addEventListener('input', saveToLocalStorage);
+        document.getElementById('pastAkts').addEventListener('input', saveToLocalStorage);
 
         updateWeightSum();
         switchSingleTarget('passing');
