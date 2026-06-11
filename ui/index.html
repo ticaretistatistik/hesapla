@@ -836,6 +836,131 @@
                 transition-duration: 0.01ms !important;
             }
         }
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.4);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+            animation: fadeIn 200ms ease-out;
+        }
+
+        .modal-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            width: 100%;
+            max-width: 580px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            animation: slideUp 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--muted);
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: var(--ink);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface-2);
+        }
+
+        .wizard-semester-group {
+            margin-bottom: 24px;
+        }
+
+        .wizard-semester-title {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 4px;
+        }
+
+        .wizard-course-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(0,0,0,0.02);
+            cursor: pointer;
+            transition: background 140ms ease;
+        }
+
+        .wizard-course-row:hover {
+            background: var(--surface-2);
+        }
+
+        .wizard-course-row input[type="checkbox"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(12px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
     </style>
 </head>
 
@@ -994,6 +1119,10 @@
                                 <label for="pastAkts">Geçmiş Toplam AKTS</label>
                                 <input type="number" id="pastAkts" min="0" max="240" step="1" placeholder="Örn: 60" inputmode="numeric">
                                 <div class="error" id="pastAktsError"></div>
+                                <button type="button" class="btn-secondary" id="btnOpenAktsWizard" style="font-size: 11px; padding: 6px 12px; margin-top: 8px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; border-color: var(--line-strong);">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                    Geçmiş Derslerimi Seçerek AKTS Hesapla
+                                </button>
                             </div>
                         </div>
 
@@ -1041,6 +1170,25 @@
                 İstatistik Bölümü öğrencileri tarafından geliştirildi.
             </div>
         </footer>
+
+        <!-- AKTS Wizard Modal -->
+        <div class="modal-overlay" id="aktsWizardModal">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <div class="modal-title">🎓 Geçmiş AKTS Sihirbazı</div>
+                    <button type="button" class="modal-close" id="btnCloseAktsWizard" aria-label="Kapat">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <div class="modal-body" id="aktsWizardBody">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="modal-footer">
+                    <div>Toplam Seçilen: <strong id="lblWizardTotalAkts">0</strong> AKTS</div>
+                    <button type="button" class="btn-primary" id="btnApplyAktsWizard" style="padding: 8px 16px; font-size: 13px;">Seçilenleri Uygula</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1059,6 +1207,7 @@
         let savedInputs = {};                  // Key: "year-class-semesterIndex-type-idOrIndex", Value: Object of values
         let calculatedSemesterGPA = null;
         let calculatedSemesterAkts = 0;
+        let checkedWizardCourses = {};         // Key: courseName, Value: boolean
 
         function saveToLocalStorage() {
             try {
@@ -1072,7 +1221,8 @@
                     pastCgpa: document.getElementById('pastCgpa') ? document.getElementById('pastCgpa').value : '',
                     pastAkts: document.getElementById('pastAkts') ? document.getElementById('pastAkts').value : '',
                     calculatedSemesterGPA,
-                    calculatedSemesterAkts
+                    calculatedSemesterAkts,
+                    checkedWizardCourses
                 };
                 localStorage.setItem('itici_gpa_state', JSON.stringify(state));
             } catch (e) {
@@ -1105,6 +1255,9 @@
                 }
                 if (state.activeSingleTarget) {
                     activeSingleTarget = state.activeSingleTarget;
+                }
+                if (state.checkedWizardCourses) {
+                    checkedWizardCourses = state.checkedWizardCourses;
                 }
             } catch (e) {
                 console.error('State local storage\'dan yüklenemedi', e);
@@ -2073,6 +2226,7 @@
             savedInputs = {};
             calculatedSemesterGPA = null;
             calculatedSemesterAkts = 0;
+            checkedWizardCourses = {};
             document.getElementById('results').classList.remove('show');
             document.getElementById('resultsContent').innerHTML = '';
             setTimeout(() => {
@@ -2146,6 +2300,114 @@
 
         document.getElementById('pastCgpa').addEventListener('input', saveToLocalStorage);
         document.getElementById('pastAkts').addEventListener('input', saveToLocalStorage);
+
+        // Past AKTS Wizard Logic
+        function renderAktsWizard() {
+            const year = document.getElementById('year').value;
+            const container = document.getElementById('aktsWizardBody');
+            if (!container) return;
+            if (!mufredat || !mufredat[year]) {
+                container.innerHTML = '<div style="text-align: center; color: var(--muted); padding: 20px;">Müfredat bilgisi yüklenemedi.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            let html = '';
+
+            const classes = ["1", "2", "3", "4"];
+            classes.forEach(classLevel => {
+                const semesters = mufredat[year][classLevel];
+                if (!semesters) return;
+
+                semesters.forEach((sem, semIdx) => {
+                    html += `
+                        <div class="wizard-semester-group">
+                            <div class="wizard-semester-title">${classLevel}. Sınıf — ${sem.donem} Dönemi</div>
+                    `;
+
+                    if (sem.dersler && Array.isArray(sem.dersler)) {
+                        sem.dersler.forEach((d, courseIdx) => {
+                            const key = `${year}-${classLevel}-${semIdx}-${courseIdx}`;
+                            const isChecked = !!checkedWizardCourses[key];
+                            html += `
+                                <label class="wizard-course-row">
+                                    <input type="checkbox" data-key="${key}" data-akts="${d.akts}" ${isChecked ? 'checked' : ''}>
+                                    <span>${d.ad}</span>
+                                    <span style="margin-left: auto; font-family: var(--font-mono); color: var(--muted); font-size: 11px;">${d.akts} AKTS</span>
+                                </label>
+                            `;
+                        });
+                    }
+
+                    html += `</div>`;
+                });
+            });
+
+            container.innerHTML = html;
+
+            // Bind change events to dynamically update
+            container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const key = this.dataset.key;
+                    checkedWizardCourses[key] = this.checked;
+                    recalculateWizardAkts();
+                    saveToLocalStorage();
+                });
+            });
+
+            recalculateWizardAkts();
+        }
+
+        function recalculateWizardAkts() {
+            let total = 0;
+            const container = document.getElementById('aktsWizardBody');
+            if (!container) return;
+            
+            container.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                total += parseInt(cb.dataset.akts) || 0;
+            });
+            
+            const totalLabel = document.getElementById('lblWizardTotalAkts');
+            if (totalLabel) {
+                totalLabel.textContent = total;
+            }
+        }
+
+        // Open wizard
+        document.getElementById('btnOpenAktsWizard').addEventListener('click', function() {
+            renderAktsWizard();
+            document.getElementById('aktsWizardModal').classList.add('show');
+        });
+
+        // Close wizard via close button
+        document.getElementById('btnCloseAktsWizard').addEventListener('click', function() {
+            document.getElementById('aktsWizardModal').classList.remove('show');
+        });
+
+        // Close wizard via backdrop click
+        document.getElementById('aktsWizardModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('show');
+            }
+        });
+
+        // Apply selected AKTS
+        document.getElementById('btnApplyAktsWizard').addEventListener('click', function() {
+            let total = 0;
+            const container = document.getElementById('aktsWizardBody');
+            if (container) {
+                container.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                    total += parseInt(cb.dataset.akts) || 0;
+                });
+            }
+            document.getElementById('pastAkts').value = total;
+            
+            // Close the modal
+            document.getElementById('aktsWizardModal').classList.remove('show');
+            
+            // Trigger state save
+            saveToLocalStorage();
+        });
 
         updateWeightSum();
         switchSingleTarget('passing');
