@@ -346,7 +346,7 @@
         "dersler": [
           {
             "ad": "Çok Değişkenli Analiz 1",
-            "akts": 5,
+            "akts": 3,
             "vize": 0.4,
             "final": 0.6,
             "quiz": 0,
@@ -354,7 +354,7 @@
           },
           {
             "ad": "Ekonometri 1",
-            "akts": 5,
+            "akts": 3,
             "vize": 0.4,
             "final": 0.6,
             "quiz": 0,
@@ -362,7 +362,7 @@
           },
           {
             "ad": "Kariyer Planlama",
-            "akts": 0,
+            "akts": 2,
             "vize": 0.4,
             "final": 0.6,
             "quiz": 0,

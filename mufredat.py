@@ -116,7 +116,7 @@ mufredat = {
                         akts=4,
                     ),
                     Ders(ad="Zaman Serileri Analizi", vize=0.4, final=0.6, akts=4),
-                    Ders(ad="Regresyon Analizi 2", vize=0.4, final=0.6, akts=5),
+                    Ders(ad="Regresyon Analizi 2", vize=0.4, final=0.5, quiz=0.1, akts=5),
                     Ders(ad="Mesleki İngilizce", vize=0.4, final=0.6, akts=4),
                     Ders(ad="Seçmeli Ders", type=DersTipi.SECMELI, akts=5),
                     Ders(ad="Üniversite Seçmeli Ders", type=DersTipi.SECMELI, akts=2),
@@ -127,9 +127,9 @@ mufredat = {
             DonemDersleri(
                 donem="Güz",
                 dersler=[
-                    Ders(ad="Çok Değişkenli Analiz 1", akts=5),
-                    Ders(ad="Ekonometri 1", akts=5),
-                    Ders(ad="Kariyer Planlama", akts=0),
+                    Ders(ad="Çok Değişkenli Analiz 1", akts=3),
+                    Ders(ad="Ekonometri 1", akts=3),
+                    Ders(ad="Kariyer Planlama", akts=2),
                     Ders(ad="Seçmeli Ders", type=DersTipi.SECMELI, akts=5),
                     Ders(ad="Seçmeli Ders", type=DersTipi.SECMELI, akts=5),
                     Ders(ad="Seçmeli Ders", type=DersTipi.SECMELI, akts=5),
